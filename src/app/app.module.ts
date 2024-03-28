@@ -9,6 +9,7 @@ import { TopNavbarComponent } from "./shared/menu/top-navbar/top-navbar.componen
 import { NgDompurifySanitizer } from "@tinkoff/ng-dompurify";
 import { TuiRootModule, TuiDialogModule, TUI_SANITIZER } from "@taiga-ui/core";
 import { TuiNavigationModule } from "@taiga-ui/experimental";
+import { PrayerTimeBaseComponent } from './pages/prayer-time-base/prayer-time-base.component';
 
 const TUI_MODULES = [
   TuiRootModule,
@@ -20,6 +21,7 @@ const TUI_MODULES = [
   declarations: [
     AppComponent,
     TopNavbarComponent,
+    PrayerTimeBaseComponent,
   ],
   imports: [
     BrowserModule,
