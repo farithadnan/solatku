@@ -7,14 +7,18 @@ import { AppComponent } from './app.component';
 import { TopNavbarComponent } from "./shared/menu/top-navbar/top-navbar.component";
 
 import { NgDompurifySanitizer } from "@tinkoff/ng-dompurify";
-import { TuiRootModule, TuiDialogModule, TUI_SANITIZER } from "@taiga-ui/core";
+import { TuiRootModule, TuiDialogModule, TuiButtonModule, TUI_SANITIZER } from "@taiga-ui/core";
+import { TuiIslandModule } from '@taiga-ui/kit';
 import { TuiNavigationModule } from "@taiga-ui/experimental";
 import { PrayerTimeBaseComponent } from './pages/prayer-time-base/prayer-time-base.component';
+import { NextPrayerInfoComponent } from './pages/prayer-time-base/next-prayer-info/next-prayer-info.component';
 
 const TUI_MODULES = [
   TuiRootModule,
   TuiDialogModule,
+  TuiButtonModule,
   TuiNavigationModule,
+  TuiIslandModule,
 ];
 
 @NgModule({
@@ -22,6 +26,7 @@ const TUI_MODULES = [
     AppComponent,
     TopNavbarComponent,
     PrayerTimeBaseComponent,
+    NextPrayerInfoComponent,
   ],
   imports: [
     BrowserModule,
