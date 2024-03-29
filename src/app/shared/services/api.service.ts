@@ -15,7 +15,7 @@ export class ApiService {
  * @returns The URI for waktu solat.
  */
   get prayerTimeUri() {
-    return `${environment}/${this.prayerTimeEndpoint}`;
+    return `${environment.api_url}/${this.prayerTimeEndpoint}`;
   }
 
   /**
@@ -23,6 +23,6 @@ export class ApiService {
    * @returns The URI of `zone`.
    */
   get zoneUri() {
-    return `${environment}/${this.zoneEndpoint}`;
+    return `${environment.api_url}/${this.zoneEndpoint}`;
   }
 }
