@@ -1,7 +1,10 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
+
 import { lastValueFrom } from "rxjs";
 import { ToastrService } from "ngx-toastr";
+import { toGregorian, toHijri } from "hijri-converter";
+
 import { ApiService } from "./api.service";
 import { Zone } from "../interfaces/zone.model";
 import { Solat } from "../interfaces/solat.model";
@@ -52,6 +55,14 @@ export class SolatService {
    * @returns a Solat object that contains the prayer time on the specific date.
    */
   getPrayerTimeViaDate(data: Solat) {
+    if (!data) {
+      this.toastr.error('Data is empty');
+      return;
+    }
+
+    data.prayers.forEach(prayer => {
+      const hijriDate = prayer.hijri;
+    });
 
   }
 
