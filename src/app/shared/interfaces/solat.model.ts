@@ -4,16 +4,21 @@ export interface Solat {
   month: string,
   lastUpdated: Date,
   prayers: PrayerTime[],
-
 }
 
 export interface PrayerTime {
   hijri: string,
   day: number,
-  fajr: Date,
-  syuruk: Date,
-  dhuhr: Date,
-  asr: Date,
-  maghrib: Date,
-  isha: Date,
+  fajr: number,
+  syuruk: number,
+  dhuhr: number,
+  asr: number,
+  maghrib: number,
+  isha: number,
+}
+
+
+export interface NextPrayerInfo {
+  name: string,
+  time: Date
 }
