@@ -1,14 +1,13 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
 
-import { lastValueFrom } from "rxjs";
+import { Observable, lastValueFrom } from "rxjs";
 import { ToastrService } from "ngx-toastr";
-import { toGregorian, toHijri } from "hijri-converter";
 
 import { ApiService } from "./api.service";
 import { Zone } from "../interfaces/zone.model";
-import { Solat } from "../interfaces/solat.model";
-
+import { PrayerTime, Solat } from "../interfaces/solat.model";
+import { DateFilterService } from "./date-filter.service";
 
 @Injectable({
   providedIn: 'root'
@@ -16,37 +15,19 @@ import { Solat } from "../interfaces/solat.model";
 export class SolatService {
   constructor(private api: ApiService,
               private toastr: ToastrService,
+              private dateFilter: DateFilterService,
               private http: HttpClient) {}
 
   /**
-   * Get the prayer time info by zone code of current month.
-   * @param zone a string that represent the zone code in Malaysia.
-   * @param year [optional] a number that represent the year. Default is the current year.
-   * @param month [optional] a number that represent the month. Default is the current month.
-   * @returns a Solat object that contains the prayer time for the zone.
-  */
-  async getPrayerTimeByCode(zone: string, year?: number, month?: number): Promise<Solat> {
-    try {
-      const params = this.getPrayerTimeParams(year, month);
-      return await lastValueFrom(this.http.get<Solat>(`${this.api.prayerTimeUri}/${zone}`, { params: params }));
-    } catch (error) {
-      console.error('Error:', error);
-
-      if (error instanceof HttpErrorResponse) {
-        if (error.status === 404) {
-          this.toastr.error('Zone code not found');
-          throw error;
-        }
-
-        if (error.status === 500) {
-          this.toastr.error('Internal server error');
-          throw error;
-        }
-
-        this.toastr.error('An unexpected error occurred');
-      }
-      throw error;
-    }
+ * Retrieves prayer times for a specified zone.
+ * @param zone The code of the zone in Malaysia.
+ * @param year The year. Defaults to the current year.
+ * @param month The month. Defaults to the current month (1-indexed).
+ * @returns An Observable emitting prayer times for the specified zone.
+ */
+  getPrayerTimeByCode(zone: string, year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1): Observable<Solat> {
+    const params = this.getPrayerTimeParams(year, month);
+    return this.http.get<Solat>(`${this.api.prayerTimeUri}/${zone}`, { params: params });
   }
 
   /**
@@ -54,16 +35,23 @@ export class SolatService {
    * @param data a Solat object that contains the zone code and date.
    * @returns a Solat object that contains the prayer time on the specific date.
    */
-  getPrayerTimeViaDate(data: Solat) {
+  getPrayerTimeViaDate(data: Solat, date: Date = new Date()): PrayerTime {
     if (!data) {
-      this.toastr.error('Data is empty');
-      return;
+      this.toastr.error("Data prayer is empty!");
+      throw new Error('Data is empty');
     }
 
-    data.prayers.forEach(prayer => {
-      const hijriDate = prayer.hijri;
-    });
+    let prayerTime!: PrayerTime;
+    // Split current date into category.
+    const [year, month, day] = this.dateFilter.splitGregorian(date, 'yyyy-MM-dd', '-');
+    for (const prayer of data.prayers) {
+      const gregorianDate = this.dateFilter.toGregorianDate(prayer.hijri, '-');
+      if (gregorianDate.gy == year && gregorianDate.gm == month && gregorianDate.gd == day) {
+        prayerTime = prayer;
+      }
+    };
 
+    return prayerTime;
   }
 
   getAllZone() {}
