@@ -17,6 +17,7 @@ import { PrayerTimeBaseComponent } from './pages/prayer-time-base/prayer-time-ba
 import { NextPrayerInfoComponent } from './pages/prayer-time-base/next-prayer-info/next-prayer-info.component';
 
 import { EpochToDatePipe } from './shared/pipes/epoch-to-date.pipe';
+import { CountdownPipe } from './shared/pipes/countdown.pipe';
 
 const TUI_MODULES = [
   TuiRootModule,
@@ -33,6 +34,7 @@ const TUI_MODULES = [
     PrayerTimeBaseComponent,
     NextPrayerInfoComponent,
     EpochToDatePipe,
+    CountdownPipe,
   ],
   imports: [
     BrowserModule,
@@ -46,7 +48,11 @@ const TUI_MODULES = [
       preventDuplicates: true,
     }),
 ],
-  providers: [{provide: TUI_SANITIZER, useClass: NgDompurifySanitizer}, DatePipe],
+  providers: [
+      {provide: TUI_SANITIZER, useClass: NgDompurifySanitizer},
+      DatePipe,
+      CountdownPipe
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
