@@ -56,9 +56,9 @@ export class NextPrayerInfoComponent implements OnChanges {
    * @param data todays prayer times including zone & hijri date.
    * @returns the next prayer names (string).
    */
-  calculateNextPrayer() {
+  calculateNextPrayer(): void {
     if (!this.prayerTimes || !this.monthlyTimes) {
-      return 'Data is Empty';
+      return;
     }
 
     const now = new Date();
@@ -74,7 +74,7 @@ export class NextPrayerInfoComponent implements OnChanges {
     }
 
     this.nextPrayerInSeconds = this.getDurationInSeconds(this.nextPrayer.time);
-    return this.nextPrayer.name
+    this.nextPrayerName = this.nextPrayer.name;
   }
 
   /**
