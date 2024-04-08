@@ -142,7 +142,7 @@ export class NextPrayerInfoComponent implements OnInit, OnDestroy {
    */
   filterUpcomingPrayers(todayPrayerTimes: NextPrayerInfo[], currentTime: Date) {
     return todayPrayerTimes.filter(prayer => {
-      (prayer.time > currentTime) && prayer.name !== 'Imsak' && prayer.name !== 'Syuruk'
+      return (prayer.time > currentTime) && prayer.name !== 'Imsak' && prayer.name !== 'Syuruk'
     });
   }
 

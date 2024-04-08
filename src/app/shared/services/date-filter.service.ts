@@ -15,8 +15,17 @@ export class DateFilterService {
    * @returns a Date() format.
    */
   epochToJsDate(timestamp: number): Date {
-    const milliseconds = timestamp * 1000;
-    return new Date(milliseconds);
+    const date = new Date(timestamp * 1000);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    const newDate = new Date();
+    newDate.setHours(hours);
+    newDate.setMinutes(minutes);
+    newDate.setSeconds(seconds);
+
+    return newDate;
   }
 
   /**
