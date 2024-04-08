@@ -50,10 +50,14 @@ export class PrayerTimeBaseComponent implements OnInit {
   checkLocalStorage() {
     if (localStorage.getItem('zone')) {
       this.chosenZone = localStorage.getItem('zone')!;
+    } else {
+      localStorage.setItem('zone', this.chosenZone);
     }
 
     if (localStorage.getItem('district')) {
       this.chosenDist = localStorage.getItem('district')!;
+    } else {
+      localStorage.setItem('district', this.chosenDist);
     }
   }
 }
