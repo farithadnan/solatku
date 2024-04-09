@@ -18,8 +18,8 @@ import { NextPrayerInfoComponent } from './pages/prayer-time-base/next-prayer-in
 
 import { EpochToDatePipe } from './shared/pipes/epoch-to-date.pipe';
 import { CountdownPipe } from './shared/pipes/countdown.pipe';
-import { TodayPrayerInfoComponent } from './pages/prayer-time-base/today-prayer-info/today-prayer-info.component';
 import { NotificationComponent } from './shared/notification/notification.component';
+import { PrayerTimeTableComponent } from './pages/prayer-time-base/prayer-time-table/prayer-time-table.component';
 
 const TUI_MODULES = [
   TuiRootModule,
@@ -37,7 +37,7 @@ const TUI_MODULES = [
     TopNavbarComponent,
     PrayerTimeBaseComponent,
     NextPrayerInfoComponent,
-    TodayPrayerInfoComponent,
+    PrayerTimeTableComponent,
     NotificationComponent,
     EpochToDatePipe,
     CountdownPipe,
