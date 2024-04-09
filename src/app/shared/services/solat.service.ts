@@ -6,7 +6,7 @@ import { ToastrService } from "ngx-toastr";
 
 import { ApiService } from "./api.service";
 import { Zone } from "../interfaces/zone.model";
-import { PrayerTime, Solat } from "../interfaces/solat.model";
+import { NextPrayerInfo, PrayerTime, Solat } from "../interfaces/solat.model";
 import { DateFilterService } from "./date-filter.service";
 
 @Injectable({
@@ -42,19 +42,26 @@ export class SolatService {
     }
 
     let prayerTime!: PrayerTime;
-    // Split current date into category.
-    const [year, month, day] = this.dateFilter.splitGregorian(date, 'yyyy-MM-dd', '-');
-    for (const prayer of data.prayers) {
-      const gregorianDate = this.dateFilter.toGregorianDate(prayer.hijri, '-');
-      if (gregorianDate.gy == year && gregorianDate.gm == month && gregorianDate.gd == day) {
+    const day = this.dateFilter.splitGregorian(date, 'dd-MM-yyyy', '-')[0];
+
+    data.prayers.filter(prayer => {
+      if (prayer.day == day) {
         prayerTime = prayer;
       }
-    };
+    })
 
     return prayerTime;
   }
 
-  getAllZone() {}
+  /**
+   * Sort the prayer list by the order of the prayer.
+   * @param prayerList a list of NextPrayerInfo array.
+   * @returns a sorted list of NextPrayerInfo array.
+   */
+  sortByPrayer(prayerList: NextPrayerInfo[]) {
+    const order = ['Imsak', 'Subuh', 'Syuruk', 'Zohor', 'Asar', 'Maghrib', 'Isyak'];
+    return prayerList.sort((a, b) => order.indexOf(a.name) - order.indexOf(b.name));
+  }
 
   /**
    * Get the zone information by zone code.

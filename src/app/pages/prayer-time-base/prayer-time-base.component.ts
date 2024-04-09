@@ -15,6 +15,9 @@ export class PrayerTimeBaseComponent implements OnInit {
   monthlyData!: Solat;
   todayPrayerTimes!: PrayerTime;
 
+  errorTitle: string = 'Ralat';
+  errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
+
   constructor(private solatApi: SolatService, private toastr: ToastrService) {}
 
   ngOnInit(): void {

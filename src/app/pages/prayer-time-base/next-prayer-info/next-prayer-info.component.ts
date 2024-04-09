@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { filter } from 'rxjs';
 import { IslamicMonth } from 'src/app/shared/enums/date.enum';
 import { NextPrayerInfo, PrayerTime, Solat } from 'src/app/shared/interfaces/solat.model';
 import { DateFilterService } from 'src/app/shared/services/date-filter.service';
@@ -20,6 +19,9 @@ export class NextPrayerInfoComponent implements OnChanges {
 
   nextPrayerName: string = '';
   nextPrayerInSeconds: number = 0;
+
+  errorTitle: string = 'Ralat';
+  errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
 
   constructor(private solatApi: SolatService,
               private dateFilter: DateFilterService) {
@@ -56,9 +58,9 @@ export class NextPrayerInfoComponent implements OnChanges {
    * @param data todays prayer times including zone & hijri date.
    * @returns the next prayer names (string).
    */
-  calculateNextPrayer() {
+  private calculateNextPrayer(): void {
     if (!this.prayerTimes || !this.monthlyTimes) {
-      return 'Data is Empty';
+      return;
     }
 
     const now = new Date();
@@ -74,7 +76,7 @@ export class NextPrayerInfoComponent implements OnChanges {
     }
 
     this.nextPrayerInSeconds = this.getDurationInSeconds(this.nextPrayer.time);
-    return this.nextPrayer.name
+    this.nextPrayerName = this.nextPrayer.name;
   }
 
   /**
@@ -83,7 +85,7 @@ export class NextPrayerInfoComponent implements OnChanges {
  * @param currentTime current dateTime.
  * @returns a list of the next upcoming prayer for today.
  */
-  filterUpcomingPrayers(todayPrayerTimes: NextPrayerInfo[], currentTime: Date) {
+  private filterUpcomingPrayers(todayPrayerTimes: NextPrayerInfo[], currentTime: Date) {
     return todayPrayerTimes.filter(prayer => {
       return (prayer.time > currentTime) && prayer.name !== 'Imsak' && prayer.name !== 'Syuruk'
     });

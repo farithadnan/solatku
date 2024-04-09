@@ -1,45 +1,42 @@
-<div class="container">
+<section class="container" *ngIf="prayerTimes; else noData">
   <tui-island size="m" class="t-island">
     <div class="tui-island__content">
-        <div *ngIf="prayerTimes" class="content-container">
-          <div class="next-prayer-section">
-            <p class="tui-island__paragraph next-prayer-lbl">Waktu seterusnya</p>
-            <h3 class="tui-island__title next-prayer-title">{{ nextPrayerName }}</h3>
-            <p class="tui-island__paragraph next-prayer-lbl-sec">
-              {{ getTodayHijriDate(prayerTimes.hijri) }} / {{ getTodaysDate() | date: 'dd MMM yyyy' }}
-            </p>
-            <div class="tui-island__paragraph next-prayer-lbl-sec">
-                <span>{{ nextPrayerInSeconds | countdown | async }}</span>
-            </div>
-          </div>
-          <hr>
-          <div class="current-zone-section">
-            <p class="tui-island__paragraph current-zone-lbl">Zon semasa</p>
-            <p class="tui-island__title current-zone-lbl-sec">{{ getDistrictName() }}</p>
-          </div>
-          <button
-              appearance="primary"
-              size="m"
-              tuiButton
-              type="button"
-              class="tui-island__footer-button"
-          >
-              Tukar Zon Semasa
-          </button>
-        </div>
-    </div>
-  </tui-island>
-
-  <tui-island size="m" class="t-island">
-    <div class="tui-island__content">
-      <div *ngIf="prayerTimes" class="content-container">
+      <div  class="content-container">
         <div class="next-prayer-section">
           <p class="tui-island__paragraph next-prayer-lbl">Waktu seterusnya</p>
+          <h3 class="tui-island__title next-prayer-title">{{ nextPrayerName }}</h3>
+          <p class="tui-island__paragraph next-prayer-lbl-sec">
+            {{ getTodayHijriDate(prayerTimes.hijri) }} / {{ getTodaysDate() | date: 'dd MMM yyyy' }}
+          </p>
+          <div class="tui-island__paragraph next-prayer-lbl-sec">
+              <span>{{ nextPrayerInSeconds | countdown | async }}</span>
+          </div>
         </div>
+        <hr>
+        <div class="current-zone-section">
+          <p class="tui-island__paragraph current-zone-lbl">Zon semasa</p>
+          <p class="tui-island__title current-zone-lbl-sec">{{ getDistrictName() }}</p>
+        </div>
+        <button
+            appearance="primary"
+            size="m"
+            tuiButton
+            type="button"
+            class="tui-island__footer-button"
+        >
+            Tukar Zon Semasa
+        </button>
       </div>
     </div>
   </tui-island>
-</div>
+</section>
 
-
-{{ prayerTimes | json }}
+<ng-template #noData>
+  <app-notification
+    [title]="errorTitle"
+    [message]="errorMessage"
+    [status]="'error'"
+    [size]="'l'"
+  >
+  </app-notification>
+</ng-template>

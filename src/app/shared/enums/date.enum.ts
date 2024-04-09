@@ -27,3 +27,13 @@ export enum GregorianMonth {
   November = "Nov",
   December = "Dec"
 }
+
+export enum PrayerTimeName {
+  imsak = "Imsak",
+  fajr = "Subuh",
+  syuruk = "Syuruk",
+  dhuhr = "Zohor",
+  asr = "Asar",
+  maghrib = "Maghrib",
+  isha = "Isyak"
+}
