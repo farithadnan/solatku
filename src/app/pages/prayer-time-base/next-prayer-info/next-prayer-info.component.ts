@@ -59,7 +59,7 @@ export class NextPrayerInfoComponent implements OnChanges {
    * @param data todays prayer times including zone & hijri date.
    * @returns the next prayer names (string).
    */
-  calculateNextPrayer(): void {
+  private calculateNextPrayer(): void {
     if (!this.prayerTimes || !this.monthlyTimes) {
       return;
     }
@@ -86,7 +86,7 @@ export class NextPrayerInfoComponent implements OnChanges {
  * @param currentTime current dateTime.
  * @returns a list of the next upcoming prayer for today.
  */
-  filterUpcomingPrayers(todayPrayerTimes: NextPrayerInfo[], currentTime: Date) {
+  private filterUpcomingPrayers(todayPrayerTimes: NextPrayerInfo[], currentTime: Date) {
     return todayPrayerTimes.filter(prayer => {
       return (prayer.time > currentTime) && prayer.name !== 'Imsak' && prayer.name !== 'Syuruk'
     });
