@@ -10,7 +10,7 @@ import { TopNavbarComponent } from "./shared/menu/top-navbar/top-navbar.componen
 
 import { ToastrModule } from 'ngx-toastr';
 import { NgDompurifySanitizer } from "@tinkoff/ng-dompurify";
-import { TuiRootModule, TuiDialogModule, TuiButtonModule, TUI_SANITIZER, TuiNotificationModule, TuiSvgModule } from "@taiga-ui/core";
+import { TuiRootModule, TuiDialogModule, TuiButtonModule, TUI_SANITIZER, TuiNotificationModule, TuiSvgModule, TuiHintModule } from "@taiga-ui/core";
 import { TuiIslandModule } from '@taiga-ui/kit';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiNavigationModule } from "@taiga-ui/experimental";
@@ -31,6 +31,7 @@ const TUI_MODULES = [
   TuiNotificationModule,
   TuiTableModule,
   TuiSvgModule,
+  TuiHintModule,
 ];
 
 @NgModule({
