@@ -1,7 +1,18 @@
 
-<app-next-prayer-info
-  [prayerTimes]="todayPrayerTimes"
-  [monthlyTimes]="monthlyData"
-  >
-</app-next-prayer-info>
+<ng-template [ngIf]="todayPrayerTimes">
+  <app-next-prayer-info
+    [prayerTimes]="todayPrayerTimes"
+    [monthlyTimes]="monthlyData"
+    >
+  </app-next-prayer-info>
+</ng-template>
 
+<ng-template [ngIf]="!todayPrayerTimes">
+  <app-notification
+    [title]="errorTitle"
+    [message]="errorMessage"
+    [status]="'error'"
+    [size]="'l'"
+  >
+  </app-notification>
+</ng-template>
