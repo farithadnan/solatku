@@ -1,0 +1,14 @@
+<div class="container">
+  <tui-island [size]="size" class="t-island">
+    <div class="tui-island__content">
+      <div class="content-container">
+        <tui-notification [status]="status" [size]="size" class="tui-space_vertical-4 tui-space_horizontal-2">
+          <div class="tui-text_body-l-2">
+            <strong>{{ title }}</strong>
+          </div>
+          {{ message }}
+        </tui-notification>
+      </div>
+    </div>
+  </tui-island>
+</div>

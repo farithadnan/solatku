@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -10,15 +10,16 @@ import { TopNavbarComponent } from "./shared/menu/top-navbar/top-navbar.componen
 
 import { ToastrModule } from 'ngx-toastr';
 import { NgDompurifySanitizer } from "@tinkoff/ng-dompurify";
-import { TuiRootModule, TuiDialogModule, TuiButtonModule, TUI_SANITIZER } from "@taiga-ui/core";
+import { TuiRootModule, TuiDialogModule, TuiButtonModule, TUI_SANITIZER, TuiNotificationModule } from "@taiga-ui/core";
 import { TuiIslandModule } from '@taiga-ui/kit';
-import { TuiNavigationModule } from "@taiga-ui/experimental";
+import { TuiNavigationModule, TuiIconModule } from "@taiga-ui/experimental";
 import { PrayerTimeBaseComponent } from './pages/prayer-time-base/prayer-time-base.component';
 import { NextPrayerInfoComponent } from './pages/prayer-time-base/next-prayer-info/next-prayer-info.component';
 
 import { EpochToDatePipe } from './shared/pipes/epoch-to-date.pipe';
 import { CountdownPipe } from './shared/pipes/countdown.pipe';
 import { TodayPrayerInfoComponent } from './pages/prayer-time-base/today-prayer-info/today-prayer-info.component';
+import { NotificationComponent } from './shared/notification/notification.component';
 
 const TUI_MODULES = [
   TuiRootModule,
@@ -26,6 +27,8 @@ const TUI_MODULES = [
   TuiButtonModule,
   TuiNavigationModule,
   TuiIslandModule,
+  TuiNotificationModule,
+  TuiIconModule,
 ];
 
 @NgModule({
@@ -35,10 +38,12 @@ const TUI_MODULES = [
     PrayerTimeBaseComponent,
     NextPrayerInfoComponent,
     TodayPrayerInfoComponent,
+    NotificationComponent,
     EpochToDatePipe,
     CountdownPipe,
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
