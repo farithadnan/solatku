@@ -6,7 +6,7 @@ import { ToastrService } from "ngx-toastr";
 
 import { ApiService } from "./api.service";
 import { Zone } from "../interfaces/zone.model";
-import { PrayerTime, Solat } from "../interfaces/solat.model";
+import { NextPrayerInfo, PrayerTime, Solat } from "../interfaces/solat.model";
 import { DateFilterService } from "./date-filter.service";
 
 @Injectable({
@@ -53,7 +53,15 @@ export class SolatService {
     return prayerTime;
   }
 
-  getAllZone() {}
+  /**
+   * Sort the prayer list by the order of the prayer.
+   * @param prayerList a list of NextPrayerInfo array.
+   * @returns a sorted list of NextPrayerInfo array.
+   */
+  sortByPrayer(prayerList: NextPrayerInfo[]) {
+    const order = ['Imsak', 'Subuh', 'Syuruk', 'Zohor', 'Asar', 'Maghrib', 'Isyak'];
+    return prayerList.sort((a, b) => order.indexOf(a.name) - order.indexOf(b.name));
+  }
 
   /**
    * Get the zone information by zone code.
