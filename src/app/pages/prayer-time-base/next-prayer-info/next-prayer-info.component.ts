@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { filter } from 'rxjs';
 import { IslamicMonth } from 'src/app/shared/enums/date.enum';
 import { NextPrayerInfo, PrayerTime, Solat } from 'src/app/shared/interfaces/solat.model';
 import { DateFilterService } from 'src/app/shared/services/date-filter.service';

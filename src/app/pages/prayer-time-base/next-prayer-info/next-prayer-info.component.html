@@ -1,4 +1,4 @@
-<div class="container" *ngIf="prayerTimes; else noData">
+<section class="container" *ngIf="prayerTimes; else noData">
   <tui-island size="m" class="t-island">
     <div class="tui-island__content">
       <div  class="content-container">
@@ -29,7 +29,7 @@
       </div>
     </div>
   </tui-island>
-</div>
+</section>
 
 <ng-template #noData>
   <app-notification
