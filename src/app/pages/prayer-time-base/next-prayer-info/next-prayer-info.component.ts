@@ -1,8 +1,14 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Injector, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { IslamicMonth } from 'src/app/shared/enums/date.enum';
 import { NextPrayerInfo, PrayerTime, Solat } from 'src/app/shared/interfaces/solat.model';
 import { DateFilterService } from 'src/app/shared/services/date-filter.service';
 import { SolatService } from 'src/app/shared/services/solat.service';
+
+import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
+import { TuiDialogService } from '@taiga-ui/core';
+
+import { ZoneSwitcherComponent } from 'src/app/shared/dialogs/zone-switcher/zone-switcher.component';
+
 
 @Component({
   selector: 'app-next-prayer-info',
@@ -23,7 +29,9 @@ export class NextPrayerInfoComponent implements OnChanges {
   errorTitle: string = 'Ralat';
   errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
 
-  constructor(private solatApi: SolatService,
+  constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
+              @Inject(Injector) private readonly injector: Injector,
+              private solatApi: SolatService,
               private dateFilter: DateFilterService) {
   }
 
@@ -155,5 +163,25 @@ export class NextPrayerInfoComponent implements OnChanges {
    */
   getTodaysDate() {
     return new Date()
+  }
+
+  private readonly dialog = this.dialogs.open<number>(
+    new PolymorpheusComponent(ZoneSwitcherComponent, this.injector),
+    {
+      data: 237,
+      dismissible: false,
+      label: 'Tukar Zone Waktu Solat',
+    }
+  )
+
+  openDialog() {
+    this.dialog.subscribe({
+      next: data => {
+        console.log("Data emitted: ", data);
+      },
+      complete() {
+        console.log("Dialog closed");
+      },
+    })
   }
 }
