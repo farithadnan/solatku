@@ -26,7 +26,7 @@ export class PrayerTimeBaseComponent implements OnInit {
     this.solatApi.getPrayerTimeByCode(this.chosenZone).subscribe({
       next: (res) => {
         this.monthlyData = res;
-        // this.todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(res);
+        this.todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(res);
       },
       error: (error) => {
         console.error('Error:', error);
