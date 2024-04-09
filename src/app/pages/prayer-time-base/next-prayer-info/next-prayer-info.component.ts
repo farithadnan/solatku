@@ -21,6 +21,9 @@ export class NextPrayerInfoComponent implements OnChanges {
   nextPrayerName: string = '';
   nextPrayerInSeconds: number = 0;
 
+  errorTitle: string = 'Ralat';
+  errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
+
   constructor(private solatApi: SolatService,
               private dateFilter: DateFilterService) {
   }
