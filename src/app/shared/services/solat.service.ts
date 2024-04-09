@@ -42,14 +42,13 @@ export class SolatService {
     }
 
     let prayerTime!: PrayerTime;
-    // Split current date into category.
-    const [year, month, day] = this.dateFilter.splitGregorian(date, 'yyyy-MM-dd', '-');
-    for (const prayer of data.prayers) {
-      const gregorianDate = this.dateFilter.toGregorianDate(prayer.hijri, '-');
-      if (gregorianDate.gy == year && gregorianDate.gm == month && gregorianDate.gd == day) {
+    const day = this.dateFilter.splitGregorian(date, 'dd-MM-yyyy', '-')[0];
+
+    data.prayers.filter(prayer => {
+      if (prayer.day == day) {
         prayerTime = prayer;
       }
-    };
+    })
 
     return prayerTime;
   }
