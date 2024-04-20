@@ -57,12 +57,21 @@ export class SolatService{
   }
 
   mapPrayerTimes(originData: PrayerTime): NextPrayerInfo[] {
+    const imsak = this.calcImsakTime(originData.fajr);
+    const fajr = this.dt.unixToDate(originData.fajr);
+    const syuruk = this.dt.unixToDate(originData.syuruk);
+    const zohor = this.dt.unixToDate(originData.dhuhr);
+    const asar = this.dt.unixToDate(originData.asr);
+    const maghrib = this.dt.unixToDate(originData.maghrib);
+    const isyak = this.dt.unixToDate(originData.isha);
+
+
     return [
-      { name: 'Imsak', time: this.calcImsakTime(originData.fajr), inSeconds: this.getDurationInSeconds(this.calcImsakTime(originData.fajr))},
-      { name: 'Subuh', time: this.dt.unixToDate(originData.fajr), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.fajr))},
-      { name: 'Syuruk', time: this.dt.unixToDate(originData.syuruk), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.syuruk))},
-      { name: 'Zohor', time: this.dt.unixToDate(originData.dhuhr), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.dhuhr))},
-      { name: 'Asar', time: this.dt.unixToDate(originData.asr), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.asr))},
+      { name: 'Imsak', time: imsak, inSeconds: this.getDurationInSeconds(imsak)},
+      { name: 'Subuh', time: fajr, inSeconds: this.getDurationInSeconds(fajr)},
+      { name: 'Syuruk', time: syuruk, inSeconds: this.getDurationInSeconds(syuruk)},
+      { name: 'Zohor', time: zohor, inSeconds: this.getDurationInSeconds(zohor)},
+      { name: 'Asar', time: this.dt.unixToDate(originData.asr), inSeconds: this.getDurationInSeconds(asar)},
       { name: 'Maghrib', time: this.dt.unixToDate(originData.maghrib), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.maghrib))},
       { name: 'Isyak', time: this.dt.unixToDate(originData.isha), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.isha))}
     ];
