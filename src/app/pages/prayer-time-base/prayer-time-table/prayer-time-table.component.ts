@@ -40,7 +40,7 @@ export class PrayerTimeTableComponent implements OnInit {
           if (prayerName === 'Subuh') {
             return { name: 'Imsak', time: new Date(value * 1000 - 10 * 60000) }
           }
-          return { name: prayerName, time: this.dateFilter.epochToJsDate(value) }
+          return { name: prayerName, time: this.dateFilter.unixToDate(value) }
         }
         return null;
       })

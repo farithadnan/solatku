@@ -21,4 +21,5 @@ export interface PrayerTime {
 export interface NextPrayerInfo {
   name: string,
   time: Date
+  inSeconds: number
 }

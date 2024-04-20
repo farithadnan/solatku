@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
 
-import { Observable, lastValueFrom } from "rxjs";
+import { lastValueFrom } from "rxjs";
 import { ToastrService } from "ngx-toastr";
 
 import { ApiService } from "./api.service";
@@ -12,27 +12,78 @@ import { DateFilterService } from "./date-filter.service";
 @Injectable({
   providedIn: 'root'
 })
-export class SolatService {
+export class SolatService{
+  zone: string = 'WLY01';
+  district: string = 'Kuala Lumpur';
+  todayPrayers!: PrayerTime;
+  monthlyPrayers!: Solat;
+
   constructor(private api: ApiService,
               private toastr: ToastrService,
-              private dateFilter: DateFilterService,
-              private http: HttpClient) {}
+              private dt: DateFilterService,
+              private http: HttpClient) {
+    this.initMonthlyPrayers();
+  }
+
+  /**
+   * Initialize the monthly prayer times.
+   * @param zone a string that represent the zone code in Malaysia.
+   */
+  async initMonthlyPrayers(zone = this.zone) {
+    try {
+      this.monthlyPrayers = await this.getPrayerTimeByCode(zone);
+      this.todayPrayers = this.getPrayerTimeViaDate(this.monthlyPrayers);
+    } catch (error) {
+      this.toastr.error('Failed to fetch prayer times', 'Error');
+    }
+  }
+
+  calcNextPrayer(): NextPrayerInfo {
+    const now = new Date();
+    const mappedTodaysData = this.mapPrayerTimes(this.todayPrayers);
+    const nextPrayerList = this.filterUpcomingPrayers(mappedTodaysData, now);
+    let nextPrayer: NextPrayerInfo;
+
+    if (nextPrayerList.length < 1) {
+      // Fetch tomorrow's prayer times
+      nextPrayer = this.getUpcomingFajrTimes(now, this.monthlyPrayers);
+    } else {
+      // Sort future by closest to the current time.
+      nextPrayer = this.sortByTime(nextPrayerList)[0];
+    }
+
+    nextPrayer.inSeconds = this.getDurationInSeconds(nextPrayer.time);
+    return nextPrayer;
+  }
+
+  mapPrayerTimes(originData: PrayerTime): NextPrayerInfo[] {
+    return [
+      { name: 'Imsak', time: this.calcImsakTime(originData.fajr), inSeconds: this.getDurationInSeconds(this.calcImsakTime(originData.fajr))},
+      { name: 'Subuh', time: this.dt.unixToDate(originData.fajr), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.fajr))},
+      { name: 'Syuruk', time: this.dt.unixToDate(originData.syuruk), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.syuruk))},
+      { name: 'Zohor', time: this.dt.unixToDate(originData.dhuhr), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.dhuhr))},
+      { name: 'Asar', time: this.dt.unixToDate(originData.asr), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.asr))},
+      { name: 'Maghrib', time: this.dt.unixToDate(originData.maghrib), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.maghrib))},
+      { name: 'Isyak', time: this.dt.unixToDate(originData.isha), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.isha))}
+    ];
+  }
 
   /**
  * Retrieves prayer times for a specified zone.
  * @param zone The code of the zone in Malaysia.
  * @param year The year. Defaults to the current year.
  * @param month The month. Defaults to the current month (1-indexed).
- * @returns An Observable emitting prayer times for the specified zone.
+ * @returns a Solat object that contains the prayer times.
  */
-  getPrayerTimeByCode(zone: string, year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1): Observable<Solat> {
+  async getPrayerTimeByCode(zone: string, year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1): Promise<Solat> {
     const params = this.getPrayerTimeParams(year, month);
-    return this.http.get<Solat>(`${this.api.prayerTimeUri}/${zone}`, { params: params });
+    return await lastValueFrom(this.http.get<Solat>(`${this.api.prayerTimeUri}/${zone}`, { params: params }));
   }
 
   /**
-   * Get the prayer time info by zone code of a specific date.
+   * Get the prayer time info by zone code of a specific date
    * @param data a Solat object that contains the zone code and date.
+   * @param date a Date object that represent the specific date. Default is today.
    * @returns a Solat object that contains the prayer time on the specific date.
    */
   getPrayerTimeViaDate(data: Solat, date: Date = new Date()): PrayerTime {
@@ -42,7 +93,7 @@ export class SolatService {
     }
 
     let prayerTime!: PrayerTime;
-    const day = this.dateFilter.splitGregorian(date, 'dd-MM-yyyy', '-')[0];
+    const day = this.dt.splitGregorian(date, 'dd-MM-yyyy', '-')[0];
 
     data.prayers.filter(prayer => {
       if (prayer.day == day) {
@@ -106,5 +157,67 @@ export class SolatService {
       params = params.set('month', month.toString());
     }
     return params;
+  }
+
+/**
+ * Calculate the imsak time based on the fajr time.
+ * @param fajrTimestamp a number that represent the fajr time.
+ * @returns a Date() object that represent the imsak time.
+ */
+  private calcImsakTime(fajrTimestamp: number) {
+    const fajrTime = this.dt.unixToDate(fajrTimestamp);
+    return new Date(fajrTime.getTime() - 10 * 60000);
+  }
+
+  /**
+  * Sort via the closest upcoming prayer to the current time.
+  * @param todayPrayerTimes list of today's prayer times.
+  * @returns a sorted prayer times.
+  */
+  private sortByTime(todayPrayerTimes: NextPrayerInfo[]) {
+    return todayPrayerTimes.sort((now, nxt) => now.time.getTime() - nxt.time.getTime());
+  }
+
+  /**
+  * Filter upcoming prayer info for today.
+  * @param todayPrayerTimes list of today's prayer times.
+  * @param currentTime current dateTime.
+  * @returns a list of the next upcoming prayer for today.
+  */
+  private filterUpcomingPrayers(todayPrayerTimes: NextPrayerInfo[], currentTime: Date) {
+    return todayPrayerTimes.filter(prayer => {
+      return (prayer.time > currentTime) && prayer.name !== 'Imsak' && prayer.name !== 'Syuruk'
+    });
+  }
+
+/**
+ * Get next fajr prayer info.
+ * @param todayDate current dateTime.
+ * @param monthlyTimes current month data of prayer time info.
+ * @returns The next fajr prayer time info.
+ */
+  private getUpcomingFajrTimes(todayDate: Date, monthlyTimes: Solat) {
+    let tomorrow = todayDate;
+    tomorrow.setDate(todayDate.getDate() + 1);
+    const tomorrowTimes = this.getPrayerTimeViaDate(monthlyTimes, tomorrow);
+    const fajrTime = this.dt.unixToDate(tomorrowTimes.fajr);
+    const nextSubuhInfo: NextPrayerInfo = {
+      name: "Subuh",
+      time: fajrTime,
+      inSeconds: this.getDurationInSeconds(fajrTime)
+    }
+    return nextSubuhInfo;
+  }
+
+  /**
+ * Get the duration of the next prayer in seconds.
+ * @param targetDate a target date to calculate the duration.
+ * @returns a duration in seconds.
+ */
+  private getDurationInSeconds(targetDate: Date) {
+    const currentDate = new Date();
+    const milliseconds = targetDate.getTime() - currentDate.getTime();
+    const seconds = Math.floor(milliseconds / 1000);
+    return seconds;
   }
 }

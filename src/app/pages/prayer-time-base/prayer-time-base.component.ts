@@ -20,31 +20,10 @@ export class PrayerTimeBaseComponent implements OnInit {
 
   constructor(private solatApi: SolatService, private toastr: ToastrService) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.checkLocalStorage();
-
-    this.solatApi.getPrayerTimeByCode(this.chosenZone).subscribe({
-      next: (res) => {
-        this.monthlyData = res;
-        this.todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(res);
-      },
-      error: (error) => {
-        console.error('Error:', error);
-
-        if (error instanceof HttpErrorResponse) {
-          if (error.status === 404) {
-            this.toastr.error('Zone code not found');
-            throw error;
-          }
-
-          if (error.status === 500) {
-            this.toastr.error('Internal server error');
-            throw error;
-          }
-          this.toastr.error('An unexpected error occurred');
-        }
-      },
-    })
+    this.monthlyData = await this.solatApi.getPrayerTimeByCode(this.chosenZone);
+    this.todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(this.monthlyData);
   }
 
   /**

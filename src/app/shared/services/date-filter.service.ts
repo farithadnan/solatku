@@ -14,7 +14,7 @@ export class DateFilterService {
    * @param timestamp unix timestamp/epoch.
    * @returns a Date() format.
    */
-  epochToJsDate(timestamp: number): Date {
+  unixToDate(timestamp: number): Date {
     const date = new Date(timestamp * 1000);
     const hours = date.getHours();
     const minutes = date.getMinutes();
