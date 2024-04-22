@@ -1,6 +1,10 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { TuiDialogContext, TuiDialogService } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
+import { GroupZone } from '../../interfaces/zone.model';
+import { ZoneService } from '../../services/zone.service';
+import { ToastrService } from 'ngx-toastr';
+import { SolatService } from '../../services/solat.service';
 
 @Component({
   selector: 'app-zone-switcher',
@@ -8,20 +12,36 @@ import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
   styleUrls: ['./zone-switcher.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ZoneSwitcherComponent {
-  value: number | null = null;
-  size: 's' | 'm' | 'l' = 'm';
-  placeholder = 'Pilih Zon Anda';
-  items = [10, 50, 100];
-  constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
-              @Inject(POLYMORPHEUS_CONTEXT) private readonly context: TuiDialogContext<number, number>) {}
+export class ZoneSwitcherComponent implements OnInit{
+  value: any | null = null;
+  selectSize: 's' | 'm' | 'l' = 'l';
+  placeholder = 'Pilih Zon';
 
-  get data(): number {
+  constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
+    private zoneApi: ZoneService, private toastr: ToastrService, private solatApi: SolatService,
+    @Inject(POLYMORPHEUS_CONTEXT) private readonly context: TuiDialogContext<number, GroupZone[]>) {}
+
+  get zones(): GroupZone[] {
     return this.context.data;
+  }
+
+  ngOnInit(): void {
+    this.value = localStorage.getItem('district');
   }
 
   submit(): void {
     if (this.value !== null) {
+      const zone = this.zoneApi.getJakimCode(this.value, this.zones);
+
+      if (zone == '') {
+        this.toastr.error('Zone not found');
+        return;
+      }
+      localStorage.setItem('district', this.value);
+      localStorage.setItem('zone', zone);
+      this.solatApi.setPrayersData(zone);
+      this.solatApi.calcNextPrayer();
+      window.location.reload();
       this.context.completeWith(this.value);
     }
   }
