@@ -14,7 +14,7 @@ export class DateFilterService {
    * @param timestamp unix timestamp/epoch.
    * @returns a Date() format.
    */
-  unixToDate(timestamp: number): Date {
+  unixToDate(timestamp: number, daysToAdd: number = 0): Date {
     const date = new Date(timestamp * 1000);
     const hours = date.getHours();
     const minutes = date.getMinutes();
@@ -24,6 +24,10 @@ export class DateFilterService {
     newDate.setHours(hours);
     newDate.setMinutes(minutes);
     newDate.setSeconds(seconds);
+
+    if (daysToAdd > 0) {
+      newDate.setDate(newDate.getDate() + daysToAdd);
+    }
 
     return newDate;
   }
