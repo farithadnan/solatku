@@ -1,3 +1,4 @@
+import { of } from 'rxjs';
 import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -12,6 +13,8 @@ import { NextPrayerInfoComponent } from './pages/prayer-time-base/next-prayer-in
 import { NotificationComponent } from './shared/notification/notification.component';
 import { PrayerTimeTableComponent } from './pages/prayer-time-base/prayer-time-table/prayer-time-table.component';
 import { ZoneSwitcherComponent } from './shared/dialogs/zone-switcher/zone-switcher.component';
+import { EpochToDatePipe } from './shared/pipes/epoch-to-date.pipe';
+import { CountdownPipe } from './shared/pipes/countdown.pipe';
 
 import { ToastrModule } from 'ngx-toastr';
 import { NgDompurifySanitizer } from "@tinkoff/ng-dompurify";
@@ -21,9 +24,7 @@ import { TuiRootModule, TuiDialogModule, TuiButtonModule, TUI_SANITIZER,
 import { TuiDataListWrapperModule, TuiIslandModule, TuiSelectModule } from '@taiga-ui/kit';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiNavigationModule } from "@taiga-ui/experimental";
-
-import { EpochToDatePipe } from './shared/pipes/epoch-to-date.pipe';
-import { CountdownPipe } from './shared/pipes/countdown.pipe';
+import { TUI_DIALOG_CLOSES_ON_BACK } from '@taiga-ui/cdk';
 
 const TUI_MODULES = [
   TuiRootModule,
@@ -57,6 +58,9 @@ const TUI_MODULES = [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    TuiSelectModule,
+    TuiDataListModule,
+    TuiDataListWrapperModule,
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
@@ -70,6 +74,7 @@ const TUI_MODULES = [
 ],
   providers: [
       {provide: TUI_SANITIZER, useClass: NgDompurifySanitizer},
+      {provide: TUI_DIALOG_CLOSES_ON_BACK, useValue: of(true)},
       DatePipe,
       CountdownPipe
   ],
