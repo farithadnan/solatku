@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { PrayerTimeName } from 'src/app/shared/enums/date.enum';
 import { NextPrayerInfo, PrayerTime, Solat } from 'src/app/shared/interfaces/solat.model';
 import { DateFilterService } from 'src/app/shared/services/date-filter.service';
@@ -11,18 +11,18 @@ import { SolatService } from 'src/app/shared/services/solat.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PrayerTimeTableComponent implements OnInit {
-  @Input() prayerTimes!: PrayerTime;
-  @Input() monthlyTimes!: Solat;
-
   prayerInfo: NextPrayerInfo[] = [];
 
   errorTitle: string = 'Ralat';
   errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
 
-  constructor(private dateFilter: DateFilterService, private solatService: SolatService){}
+  constructor(private dateFilter: DateFilterService, private solatApi: SolatService, private cdr: ChangeDetectorRef){}
 
-  ngOnInit(): void {
-    this.prayerInfo = this.filterPrayerTimes(this.prayerTimes);
+  async ngOnInit(): Promise<void> {
+    const monthlyData = await this.solatApi.getPrayerTimeByCode(this.solatApi.zone);
+    const todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(monthlyData);
+    this.prayerInfo = this.filterPrayerTimes(todayPrayerTimes);
+    this.cdr.detectChanges();
   }
 
 
@@ -46,7 +46,7 @@ export class PrayerTimeTableComponent implements OnInit {
       })
       .filter(info => info !== null) as NextPrayerInfo[];
 
-    return this.solatService.sortByPrayer(prayerList);
+    return this.solatApi.sortByPrayer(prayerList);
   }
 
   /**
