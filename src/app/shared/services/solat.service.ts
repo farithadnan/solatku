@@ -8,6 +8,7 @@ import { ApiService } from "./api.service";
 import { Zone } from "../interfaces/zone.model";
 import { NextPrayerInfo, PrayerTime, Solat } from "../interfaces/solat.model";
 import { DateFilterService } from "./date-filter.service";
+import { IslamicMonth, PrayerTimeName } from "../enums/date.enum";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,8 @@ import { DateFilterService } from "./date-filter.service";
 export class SolatService{
   zone: string = 'WLY01';
   district: string = 'Kuala Lumpur';
+  prayerNames = ['Imsak', 'Subuh', 'Syuruk', 'Zohor', 'Asar', 'Maghrib', 'Isyak'];
+
   todayPrayers!: PrayerTime;
   monthlyPrayers!: Solat;
 
@@ -22,14 +25,32 @@ export class SolatService{
               private toastr: ToastrService,
               private dt: DateFilterService,
               private http: HttpClient) {
-    this.initMonthlyPrayers();
+    this.setLocalStorage();
+    this.setPrayersData();
+  }
+
+  /**
+   * Check & set the local storage for the zone and district.
+   */
+  setLocalStorage() {
+    if (localStorage.getItem('zone')) {
+      this.zone = localStorage.getItem('zone')!;
+    } else {
+      localStorage.setItem('zone', this.zone);
+    }
+
+    if (localStorage.getItem('district')) {
+      this.district = localStorage.getItem('district')!;
+    } else {
+      localStorage.setItem('district', this.district);
+    }
   }
 
   /**
    * Initialize the monthly prayer times.
    * @param zone a string that represent the zone code in Malaysia.
    */
-  async initMonthlyPrayers(zone = this.zone) {
+  async setPrayersData(zone = this.zone) {
     try {
       this.monthlyPrayers = await this.getPrayerTimeByCode(zone);
       this.todayPrayers = this.getPrayerTimeViaDate(this.monthlyPrayers);
@@ -38,6 +59,10 @@ export class SolatService{
     }
   }
 
+  /**
+   * Calculate the next prayer time.
+   * @returns a NextPrayerInfo object that contains the next prayer time.
+   */
   calcNextPrayer(): NextPrayerInfo {
     const now = new Date();
     const mappedTodaysData = this.mapPrayerTimes(this.todayPrayers);
@@ -47,6 +72,7 @@ export class SolatService{
     if (nextPrayerList.length < 1) {
       // Fetch tomorrow's prayer times
       nextPrayer = this.getUpcomingFajrTimes(now, this.monthlyPrayers);
+
     } else {
       // Sort future by closest to the current time.
       nextPrayer = this.sortByTime(nextPrayerList)[0];
@@ -56,25 +82,48 @@ export class SolatService{
     return nextPrayer;
   }
 
+  /**
+   * Map the prayer times to the NextPrayerInfo object.
+   * @param originData a PrayerTime object that contains the prayer times.
+   * @returns a list of NextPrayerInfo object.
+   */
   mapPrayerTimes(originData: PrayerTime): NextPrayerInfo[] {
-    const imsak = this.calcImsakTime(originData.fajr);
-    const fajr = this.dt.unixToDate(originData.fajr);
-    const syuruk = this.dt.unixToDate(originData.syuruk);
-    const zohor = this.dt.unixToDate(originData.dhuhr);
-    const asar = this.dt.unixToDate(originData.asr);
-    const maghrib = this.dt.unixToDate(originData.maghrib);
-    const isyak = this.dt.unixToDate(originData.isha);
-
-
-    return [
-      { name: 'Imsak', time: imsak, inSeconds: this.getDurationInSeconds(imsak)},
-      { name: 'Subuh', time: fajr, inSeconds: this.getDurationInSeconds(fajr)},
-      { name: 'Syuruk', time: syuruk, inSeconds: this.getDurationInSeconds(syuruk)},
-      { name: 'Zohor', time: zohor, inSeconds: this.getDurationInSeconds(zohor)},
-      { name: 'Asar', time: this.dt.unixToDate(originData.asr), inSeconds: this.getDurationInSeconds(asar)},
-      { name: 'Maghrib', time: this.dt.unixToDate(originData.maghrib), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.maghrib))},
-      { name: 'Isyak', time: this.dt.unixToDate(originData.isha), inSeconds: this.getDurationInSeconds(this.dt.unixToDate(originData.isha))}
+    const prayerTimes = [
+      originData.fajr,
+      originData.fajr,
+      originData.syuruk,
+      originData.dhuhr,
+      originData.asr,
+      originData.maghrib,
+      originData.isha
     ];
+
+    return this.prayerNames.map((name, index) => {
+      const time = index == 0 ? this.calcImsakTime(prayerTimes[index]) : this.dt.unixToDate(prayerTimes[index]);
+      const inSeconds = this.getDurationInSeconds(time);
+      const hijriDate = this.getTodayHijriDate(originData.hijri);
+
+      return {
+        name: name,
+        time: time,
+        inSeconds: inSeconds,
+        hijriDate: hijriDate,
+        zone: this.zone,
+        district: this.district
+      };
+    });
+  }
+
+/**
+ * Get and format hijri date.
+ * @param hijriDate todays hijri date.
+ * @returns a formatted hijri date.
+ */
+  getTodayHijriDate(hijriDate: string) {
+    const [year, month, day] = this.dt.splitHijri(hijriDate, '-');
+    // -1 because it uses 0-based index.
+    const monthName = Object.values(IslamicMonth)[month - 1];
+    return `${day} ${monthName} ${year}`
   }
 
   /**
@@ -119,8 +168,7 @@ export class SolatService{
    * @returns a sorted list of NextPrayerInfo array.
    */
   sortByPrayer(prayerList: NextPrayerInfo[]) {
-    const order = ['Imsak', 'Subuh', 'Syuruk', 'Zohor', 'Asar', 'Maghrib', 'Isyak'];
-    return prayerList.sort((a, b) => order.indexOf(a.name) - order.indexOf(b.name));
+    return prayerList.sort((a, b) => this.prayerNames.indexOf(a.name) - this.prayerNames.indexOf(b.name));
   }
 
   /**
@@ -195,7 +243,7 @@ export class SolatService{
   */
   private filterUpcomingPrayers(todayPrayerTimes: NextPrayerInfo[], currentTime: Date) {
     return todayPrayerTimes.filter(prayer => {
-      return (prayer.time > currentTime) && prayer.name !== 'Imsak' && prayer.name !== 'Syuruk'
+      return (prayer.time > currentTime) && prayer.name !== PrayerTimeName.imsak && prayer.name !== PrayerTimeName.syuruk;
     });
   }
 
@@ -208,12 +256,21 @@ export class SolatService{
   private getUpcomingFajrTimes(todayDate: Date, monthlyTimes: Solat) {
     let tomorrow = todayDate;
     tomorrow.setDate(todayDate.getDate() + 1);
-    const tomorrowTimes = this.getPrayerTimeViaDate(monthlyTimes, tomorrow);
-    const fajrTime = this.dt.unixToDate(tomorrowTimes.fajr);
+
+    const tomorrowPrayerTimes = this.getPrayerTimeViaDate(monthlyTimes, tomorrow);
+    const fajrDatetime = this.dt.unixToDate(tomorrowPrayerTimes.fajr, 1);
+
+    const hijriDate = this.dt.splitHijri(tomorrowPrayerTimes.hijri, '-');
+    const islamicMonthArray = Object.values(IslamicMonth);
+    const hijriString = `${hijriDate[2]} ${islamicMonthArray[hijriDate[1] - 1]} ${hijriDate[0]}`;
+
     const nextSubuhInfo: NextPrayerInfo = {
-      name: "Subuh",
-      time: fajrTime,
-      inSeconds: this.getDurationInSeconds(fajrTime)
+      name: PrayerTimeName.fajr,
+      time: fajrDatetime,
+      inSeconds: this.getDurationInSeconds(fajrDatetime),
+      hijriDate: hijriString,
+      zone: this.zone,
+      district: this.district
     }
     return nextSubuhInfo;
   }
