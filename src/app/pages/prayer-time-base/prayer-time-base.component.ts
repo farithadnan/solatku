@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { PrayerTime, Solat } from 'src/app/shared/interfaces/solat.model';
 import { SolatService } from 'src/app/shared/services/solat.service';
@@ -19,9 +19,11 @@ export class PrayerTimeBaseComponent implements OnInit {
 
   constructor(private solatApi: SolatService, private toastr: ToastrService) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.solatApi.setLocalStorage();
-    this.monthlyData = await this.solatApi.getPrayerTimeByCode(this.chosenZone);
-    this.todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(this.monthlyData);
+    this.solatApi.getPrayerTimeByCode(this.chosenZone).subscribe((data: Solat) => {
+      this.monthlyData = data;
+      this.todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(this.monthlyData);
+    });
   }
 }
