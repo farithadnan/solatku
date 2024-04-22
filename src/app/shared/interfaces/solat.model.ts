@@ -22,4 +22,7 @@ export interface NextPrayerInfo {
   name: string,
   time: Date
   inSeconds: number
+  hijriDate: string,
+  zone: string,
+  district: string,
 }
