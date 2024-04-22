@@ -1,12 +1,10 @@
 import { ChangeDetectionStrategy, Component, Inject, Injector, Input, OnInit } from '@angular/core';
 import { NextPrayerInfo, PrayerTime, Solat } from 'src/app/shared/interfaces/solat.model';
-import { DateFilterService } from 'src/app/shared/services/date-filter.service';
 import { SolatService } from 'src/app/shared/services/solat.service';
-
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { TuiDialogService } from '@taiga-ui/core';
-
 import { ZoneSwitcherComponent } from 'src/app/shared/dialogs/zone-switcher/zone-switcher.component';
+import { takeWhile } from 'rxjs';
 
 
 @Component({
@@ -16,14 +14,7 @@ import { ZoneSwitcherComponent } from 'src/app/shared/dialogs/zone-switcher/zone
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NextPrayerInfoComponent implements OnInit {
-  @Input() prayerTimes!: PrayerTime;
-  @Input() monthlyTimes!: Solat;
-
-  todayPrayers: NextPrayerInfo[] = [];
   nextPrayer!: NextPrayerInfo;
-
-  nextPrayerName: string = '';
-  nextPrayerInSeconds: number = 0;
 
   errorTitle: string = 'Ralat';
   errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
@@ -39,12 +30,18 @@ export class NextPrayerInfoComponent implements OnInit {
 
   constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
               @Inject(Injector) private readonly injector: Injector,
-              private solatApi: SolatService,
-              private dateFilter: DateFilterService) {
+              private solatApi: SolatService) {
   }
 
   ngOnInit(): void {
     this.nextPrayer = this.solatApi.calcNextPrayer();
+    // Subscribe to the next prayer in seconds if it is less than 0.
+    this.solatApi.nextPrayerInSeconds$.pipe(takeWhile(seconds => seconds >= 0))
+    .subscribe(seconds => {
+      if (seconds === 0) {
+        this.nextPrayer = this.solatApi.calcNextPrayer();
+      }
+    });
   }
 
   /**
