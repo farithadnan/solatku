@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Inject, Injector, Input, OnInit } from '@angular/core';
-import { IslamicMonth } from 'src/app/shared/enums/date.enum';
 import { NextPrayerInfo, PrayerTime, Solat } from 'src/app/shared/interfaces/solat.model';
 import { DateFilterService } from 'src/app/shared/services/date-filter.service';
 import { SolatService } from 'src/app/shared/services/solat.service';
@@ -29,6 +28,15 @@ export class NextPrayerInfoComponent implements OnInit {
   errorTitle: string = 'Ralat';
   errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
 
+  private readonly dialog = this.dialogs.open<number>(
+    new PolymorpheusComponent(ZoneSwitcherComponent, this.injector),
+    {
+      data: 237,
+      dismissible: false,
+      label: 'Tukar Zone Waktu Solat',
+    }
+  );
+
   constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
               @Inject(Injector) private readonly injector: Injector,
               private solatApi: SolatService,
@@ -40,42 +48,8 @@ export class NextPrayerInfoComponent implements OnInit {
   }
 
   /**
-   * Get the name of the district.
-   * @returns the name of the district.
+   * Open the dialog for zone switcher.
    */
-  getDistrictName() {
-    return localStorage.getItem('district');
-  }
-
-  /**
-   * Get and format hijri date.
-   * @param hijriDate todays hijri date.
-   * @returns a formatted hijri date.
-   */
-  getTodayHijriDate(hijriDate: string) {
-    const [year, month, day] = this.dateFilter.splitHijri(hijriDate, '-');
-    // -1 because it uses 0-based index.
-    const monthName = Object.values(IslamicMonth)[month - 1];
-    return `${day} ${monthName} ${year}`
-  }
-
-  /**
-   * Get current DateTime.
-   * @returns Return current dateTime.
-   */
-  getTodaysDate() {
-    return new Date()
-  }
-
-  private readonly dialog = this.dialogs.open<number>(
-    new PolymorpheusComponent(ZoneSwitcherComponent, this.injector),
-    {
-      data: 237,
-      dismissible: false,
-      label: 'Tukar Zone Waktu Solat',
-    }
-  )
-
   openDialog() {
     this.dialog.subscribe({
       next: data => {

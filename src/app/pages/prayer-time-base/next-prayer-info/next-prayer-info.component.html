@@ -6,7 +6,7 @@
           <p class="tui-island__paragraph next-prayer-lbl">Waktu seterusnya</p>
           <h3 class="tui-island__title next-prayer-title">{{ nextPrayer.name }}</h3>
           <p class="tui-island__paragraph next-prayer-lbl-sec">
-            {{ getTodayHijriDate(prayerTimes.hijri) }} / {{ getTodaysDate() | date: 'dd MMM yyyy' }}
+            {{ nextPrayer.hijriDate }} / {{ nextPrayer.time | date: 'dd MMM yyyy' }}
           </p>
           <div class="tui-island__paragraph next-prayer-lbl-sec">
               <span>{{ nextPrayer.inSeconds | countdown | async }}</span>
@@ -15,7 +15,7 @@
         <hr>
         <div class="current-zone-section">
           <p class="tui-island__paragraph current-zone-lbl">Zon semasa</p>
-          <p class="tui-island__title current-zone-lbl-sec">{{ getDistrictName() }}</p>
+          <p class="tui-island__title current-zone-lbl-sec">{{ nextPrayer.district }}</p>
         </div>
         <button
             appearance="primary"
