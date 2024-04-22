@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
 
-import { lastValueFrom } from "rxjs";
+import { Subject, lastValueFrom } from "rxjs";
 import { ToastrService } from "ngx-toastr";
 
 import { ApiService } from "./api.service";
@@ -20,6 +20,8 @@ export class SolatService{
 
   todayPrayers!: PrayerTime;
   monthlyPrayers!: Solat;
+
+  nextPrayerInSeconds$ = new Subject<number>();
 
   constructor(private api: ApiService,
               private toastr: ToastrService,
@@ -79,6 +81,7 @@ export class SolatService{
     }
 
     nextPrayer.inSeconds = this.getDurationInSeconds(nextPrayer.time);
+    this.nextPrayerInSeconds$.next(nextPrayer.inSeconds);
     return nextPrayer;
   }
 
