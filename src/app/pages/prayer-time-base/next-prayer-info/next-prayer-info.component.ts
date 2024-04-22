@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Inject, Injector, Input, OnInit } from '@angular/core';
-import { NextPrayerInfo, PrayerTime, Solat } from 'src/app/shared/interfaces/solat.model';
+import { Component, Inject, Injector, OnInit } from '@angular/core';
+import { NextPrayerInfo } from 'src/app/shared/interfaces/solat.model';
 import { SolatService } from 'src/app/shared/services/solat.service';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { TuiDialogService } from '@taiga-ui/core';
@@ -11,7 +11,6 @@ import { takeWhile } from 'rxjs';
   selector: 'app-next-prayer-info',
   templateUrl: './next-prayer-info.component.html',
   styleUrls: ['./next-prayer-info.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NextPrayerInfoComponent implements OnInit {
   nextPrayer!: NextPrayerInfo;
