@@ -14,7 +14,7 @@ import { IslamicMonth, PrayerTimeName } from "../enums/date.enum";
 })
 export class SolatService{
   zone: string = 'WLY01';
-  district: string = 'Kuala Lumpur';
+  district: string = 'Kuala Lumpur, Putrajaya';
   prayerNames: PrayerTimeName[] = [
     PrayerTimeName.imsak,
     PrayerTimeName.fajr,
@@ -34,24 +34,32 @@ export class SolatService{
               private toastr: ToastrService,
               private dt: DateFilterService,
               private http: HttpClient) {
-    this.setLocalStorage();
+    this.refreshPrayerTime();
+  }
+
+
+  /**
+   * Refresh the prayer time data.
+   */
+  refreshPrayerTime() {
+    this.setStorage();
     this.setPrayersData();
   }
 
   /**
    * Check & set the local storage for the zone and district.
    */
-  setLocalStorage() {
+  setStorage(zone?: string, district?: string) {
     if (localStorage.getItem('zone')) {
       this.zone = localStorage.getItem('zone')!;
     } else {
-      localStorage.setItem('zone', this.zone);
+      localStorage.setItem('zone', zone ?? this.zone);
     }
 
     if (localStorage.getItem('district')) {
       this.district = localStorage.getItem('district')!;
     } else {
-      localStorage.setItem('district', this.district);
+      localStorage.setItem('district', district ?? this.district);
     }
   }
 
@@ -61,6 +69,7 @@ export class SolatService{
    */
   async setPrayersData(zone = this.zone) {
     try {
+      console.log('Zone: ', zone);
       lastValueFrom(this.getPrayerTimeByCode(zone)).then((prayers: Solat) => {
         this.monthlyPrayers = prayers;
         this.todayPrayers = this.getPrayerTimeViaDate(this.monthlyPrayers);
