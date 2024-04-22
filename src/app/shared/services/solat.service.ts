@@ -1,11 +1,10 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
 
-import { Subject, lastValueFrom } from "rxjs";
+import { Observable, Subject, catchError, lastValueFrom, throwError } from "rxjs";
 import { ToastrService } from "ngx-toastr";
 
 import { ApiService } from "./api.service";
-import { Zone } from "../interfaces/zone.model";
 import { NextPrayerInfo, PrayerTime, Solat } from "../interfaces/solat.model";
 import { DateFilterService } from "./date-filter.service";
 import { IslamicMonth, PrayerTimeName } from "../enums/date.enum";
@@ -16,7 +15,15 @@ import { IslamicMonth, PrayerTimeName } from "../enums/date.enum";
 export class SolatService{
   zone: string = 'WLY01';
   district: string = 'Kuala Lumpur';
-  prayerNames = ['Imsak', 'Subuh', 'Syuruk', 'Zohor', 'Asar', 'Maghrib', 'Isyak'];
+  prayerNames: PrayerTimeName[] = [
+    PrayerTimeName.imsak,
+    PrayerTimeName.fajr,
+    PrayerTimeName.syuruk,
+    PrayerTimeName.dhuhr,
+    PrayerTimeName.asr,
+    PrayerTimeName.maghrib,
+    PrayerTimeName.isha
+  ];
 
   todayPrayers!: PrayerTime;
   monthlyPrayers!: Solat;
@@ -54,8 +61,10 @@ export class SolatService{
    */
   async setPrayersData(zone = this.zone) {
     try {
-      this.monthlyPrayers = await this.getPrayerTimeByCode(zone);
-      this.todayPrayers = this.getPrayerTimeViaDate(this.monthlyPrayers);
+      lastValueFrom(this.getPrayerTimeByCode(zone)).then((prayers: Solat) => {
+        this.monthlyPrayers = prayers;
+        this.todayPrayers = this.getPrayerTimeViaDate(this.monthlyPrayers);
+      });
     } catch (error) {
       this.toastr.error('Failed to fetch prayer times', 'Error');
     }
@@ -86,59 +95,27 @@ export class SolatService{
   }
 
   /**
-   * Map the prayer times to the NextPrayerInfo object.
-   * @param originData a PrayerTime object that contains the prayer times.
-   * @returns a list of NextPrayerInfo object.
-   */
-  mapPrayerTimes(originData: PrayerTime): NextPrayerInfo[] {
-    const prayerTimes = [
-      originData.fajr,
-      originData.fajr,
-      originData.syuruk,
-      originData.dhuhr,
-      originData.asr,
-      originData.maghrib,
-      originData.isha
-    ];
-
-    return this.prayerNames.map((name, index) => {
-      const time = index == 0 ? this.calcImsakTime(prayerTimes[index]) : this.dt.unixToDate(prayerTimes[index]);
-      const inSeconds = this.getDurationInSeconds(time);
-      const hijriDate = this.getTodayHijriDate(originData.hijri);
-
-      return {
-        name: name,
-        time: time,
-        inSeconds: inSeconds,
-        hijriDate: hijriDate,
-        zone: this.zone,
-        district: this.district
-      };
-    });
-  }
-
-/**
- * Get and format hijri date.
- * @param hijriDate todays hijri date.
- * @returns a formatted hijri date.
- */
-  getTodayHijriDate(hijriDate: string) {
-    const [year, month, day] = this.dt.splitHijri(hijriDate, '-');
-    // -1 because it uses 0-based index.
-    const monthName = Object.values(IslamicMonth)[month - 1];
-    return `${day} ${monthName} ${year}`
-  }
-
-  /**
  * Retrieves prayer times for a specified zone.
  * @param zone The code of the zone in Malaysia.
  * @param year The year. Defaults to the current year.
  * @param month The month. Defaults to the current month (1-indexed).
  * @returns a Solat object that contains the prayer times.
  */
-  async getPrayerTimeByCode(zone: string, year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1): Promise<Solat> {
+  getPrayerTimeByCode(zone: string, year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1): Observable<Solat> {
     const params = this.getPrayerTimeParams(year, month);
-    return await lastValueFrom(this.http.get<Solat>(`${this.api.prayerTimeUri}/${zone}`, { params: params }));
+
+    return this.http.get<Solat>(`${this.api.prayerTimeUri}/${zone}`, { params: params }).pipe(
+      catchError((error: HttpErrorResponse): Observable<any> => {
+        if (error.status === 404) {
+          this.toastr.error('Data not found. Probably the solat data for the given month and year is not retrived yet. Please contact developer.');
+        } else if (error.status === 500) {
+          this.toastr.error('Error when parsing the parameter provided.');
+        } else {
+          this.toastr.error('An unexpected error occurred');
+        }
+        return throwError(() => error);
+      })
+    )
   }
 
   /**
@@ -171,35 +148,51 @@ export class SolatService{
    * @returns a sorted list of NextPrayerInfo array.
    */
   sortByPrayer(prayerList: NextPrayerInfo[]) {
-    return prayerList.sort((a, b) => this.prayerNames.indexOf(a.name) - this.prayerNames.indexOf(b.name));
+    return prayerList.sort((a, b) => this.prayerNames.indexOf(a.name as PrayerTimeName) - this.prayerNames.indexOf(b.name as PrayerTimeName));
+  }
+
+ /**
+ * Map the prayer times to the NextPrayerInfo object.
+ * @param originData a PrayerTime object that contains the prayer times.
+ * @returns a list of NextPrayerInfo object.
+ */
+  private mapPrayerTimes(originData: PrayerTime): NextPrayerInfo[] {
+    const prayerTimes = [
+      originData.fajr,
+      originData.fajr,
+      originData.syuruk,
+      originData.dhuhr,
+      originData.asr,
+      originData.maghrib,
+      originData.isha
+    ];
+
+    return this.prayerNames.map((name, index) => {
+      const time = index == 0 ? this.calcImsakTime(prayerTimes[index]) : this.dt.unixToDate(prayerTimes[index]);
+      const inSeconds = this.getDurationInSeconds(time);
+      const hijriDate = this.getTodayHijriDate(originData.hijri);
+
+      return {
+        name: name,
+        time: time,
+        inSeconds: inSeconds,
+        hijriDate: hijriDate,
+        zone: this.zone,
+        district: this.district
+      };
+    });
   }
 
   /**
-   * Get the zone information by zone code.
-   * @param zone a string that represent the zone code in Malaysia.
-   * @returns a Zone object that contains the information of the zone.
+   * Get and format hijri date.
+   * @param hijriDate todays hijri date.
+   * @returns a formatted hijri date.
    */
-  async getZoneByCode(zone: string): Promise<Zone> {
-    try {
-      return await lastValueFrom(this.http.get<Zone>(`${this.api.zoneUri}/${zone}`));
-    } catch (error) {
-      console.error('Error:', error);
-
-      if (error instanceof HttpErrorResponse) {
-        if (error.status === 404) {
-          this.toastr.error('Zone code not found');
-          throw error;
-        }
-
-        if (error.status === 500) {
-          this.toastr.error('Internal server error');
-          throw error;
-        }
-
-        this.toastr.error('An unexpected error occurred');
-      }
-      throw error;
-    }
+  private getTodayHijriDate(hijriDate: string) {
+    const [year, month, day] = this.dt.splitHijri(hijriDate, '-');
+    // -1 because it uses 0-based index.
+    const monthName = Object.values(IslamicMonth)[month - 1];
+    return `${day} ${monthName} ${year}`
   }
 
   /**
