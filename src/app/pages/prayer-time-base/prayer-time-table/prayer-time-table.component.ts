@@ -18,11 +18,13 @@ export class PrayerTimeTableComponent implements OnInit {
 
   constructor(private dateFilter: DateFilterService, private solatApi: SolatService, private cdr: ChangeDetectorRef){}
 
-  async ngOnInit(): Promise<void> {
-    const monthlyData = await this.solatApi.getPrayerTimeByCode(this.solatApi.zone);
-    const todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(monthlyData);
-    this.prayerInfo = this.filterPrayerTimes(todayPrayerTimes);
-    this.cdr.detectChanges();
+  ngOnInit(): void {
+    this.solatApi.getPrayerTimeByCode(this.solatApi.zone).subscribe((data: Solat) => {
+      const monthlyData = data;
+      const todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(monthlyData);
+      this.prayerInfo = this.filterPrayerTimes(todayPrayerTimes);
+      this.cdr.detectChanges();
+    });
   }
 
 
