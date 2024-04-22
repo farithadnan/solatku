@@ -5,6 +5,8 @@ import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { TuiDialogService } from '@taiga-ui/core';
 import { ZoneSwitcherComponent } from 'src/app/shared/dialogs/zone-switcher/zone-switcher.component';
 import { takeWhile } from 'rxjs';
+import { GroupZone, Zone } from 'src/app/shared/interfaces/zone.model';
+import { ZoneService } from 'src/app/shared/services/zone.service';
 
 
 @Component({
@@ -14,21 +16,14 @@ import { takeWhile } from 'rxjs';
 })
 export class NextPrayerInfoComponent implements OnInit {
   nextPrayer!: NextPrayerInfo;
+  zoneData: GroupZone[] = [];
 
   errorTitle: string = 'Ralat';
-  errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
-
-  private readonly dialog = this.dialogs.open<number>(
-    new PolymorpheusComponent(ZoneSwitcherComponent, this.injector),
-    {
-      data: 237,
-      dismissible: false,
-      label: 'Tukar Zone Waktu Solat',
-    }
-  );
+  errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.';
 
   constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
               @Inject(Injector) private readonly injector: Injector,
+              private zoneApi: ZoneService,
               private solatApi: SolatService) {
   }
 
@@ -41,13 +36,25 @@ export class NextPrayerInfoComponent implements OnInit {
         this.nextPrayer = this.solatApi.calcNextPrayer();
       }
     });
+
+    this.zoneApi.getZones().subscribe((data: Zone[]) => {
+      this.zoneData = this.zoneApi.groupZoneByState(data);
+    })
   }
 
   /**
    * Open the dialog for zone switcher.
    */
   openDialog() {
-    this.dialog.subscribe({
+    this.dialogs.open(
+      new PolymorpheusComponent(ZoneSwitcherComponent, this.injector),
+      {
+        data: this.zoneData,
+        size: 'm',
+        dismissible: false,
+        label: 'Tukar Zon',
+      }
+    ).subscribe({
       next: data => {
         console.log("Data emitted: ", data);
       },
