@@ -1,14 +1,8 @@
 
 <ng-template [ngIf]="todayPrayerTimes && monthlyData">
-  <app-next-prayer-info
-    [prayerTimes]="todayPrayerTimes"
-    [monthlyTimes]="monthlyData"
-    >
+  <app-next-prayer-info>
   </app-next-prayer-info>
-  <app-prayer-time-table
-    [prayerTimes]="todayPrayerTimes"
-    [monthlyTimes]="monthlyData"
-  >
+  <app-prayer-time-table>
   </app-prayer-time-table>
 </ng-template>
 
