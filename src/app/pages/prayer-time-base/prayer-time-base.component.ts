@@ -18,9 +18,9 @@ export class PrayerTimeBaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.solatApi.initStorage();
-    this.solatApi.getPrayerTimeByCode(this.solatApi.zone).subscribe((data: Solat) => {
+    this.solatApi.getPrayerTimeByCode().subscribe((data: Solat) => {
       this.monthlyData = data;
-      this.todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(this.monthlyData);
+      this.todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(this.monthlyData) as PrayerTime;
     });
   }
 }
