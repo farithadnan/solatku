@@ -37,12 +37,6 @@ export class ZoneSwitcherComponent implements OnInit{
         this.toastr.error('Zone not found');
         return;
       }
-      localStorage.setItem('district', this.value);
-      localStorage.setItem('zone', zone);
-      // this.solatApi.setPrayersData(zone);
-      // this.solatApi.calcNextPrayer();
-      // window.location.reload();
-
 
       const result: Daerah = {
         jakimCode: zone,
