@@ -5,8 +5,9 @@ import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { TuiDialogService } from '@taiga-ui/core';
 import { ZoneSwitcherComponent } from 'src/app/shared/dialogs/zone-switcher/zone-switcher.component';
 import { takeWhile } from 'rxjs';
-import { GroupZone, Zone } from 'src/app/shared/interfaces/zone.model';
+import { Daerah, GroupZone, Zone } from 'src/app/shared/interfaces/zone.model';
 import { ZoneService } from 'src/app/shared/services/zone.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -23,6 +24,7 @@ export class NextPrayerInfoComponent implements OnInit {
 
   constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
               @Inject(Injector) private readonly injector: Injector,
+              private toastr: ToastrService,
               private zoneApi: ZoneService,
               private solatApi: SolatService) {
   }
@@ -56,6 +58,17 @@ export class NextPrayerInfoComponent implements OnInit {
       }
     ).subscribe({
       next: data => {
+        const result = data as unknown as Daerah;
+
+        if (!result || !result.jakimCode || !result.name) {
+          this.toastr.error('Zon can\'t be set. Please try again.');
+          return;
+        }
+
+        this.solatApi.setStorage(result.jakimCode, result.name);
+        this.nextPrayer = this.solatApi.calcNextPrayer();
+        this.solatApi.setPrayersData(result.jakimCode);
+
         console.log("Data emitted: ", data);
       },
       complete() {

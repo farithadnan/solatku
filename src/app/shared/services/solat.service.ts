@@ -50,6 +50,10 @@ export class SolatService{
    * Check & set the local storage for the zone and district.
    */
   setStorage(zone?: string, district?: string) {
+
+    console.log("zone", zone);
+    console.log("district", district);
+
     if (localStorage.getItem('zone')) {
       this.zone = localStorage.getItem('zone')!;
     } else {
@@ -68,8 +72,9 @@ export class SolatService{
    * @param zone a string that represent the zone code in Malaysia.
    */
   async setPrayersData(zone = this.zone) {
+    console.log("Prayer zone: ", zone);
+
     try {
-      console.log('Zone: ', zone);
       lastValueFrom(this.getPrayerTimeByCode(zone)).then((prayers: Solat) => {
         this.monthlyPrayers = prayers;
         this.todayPrayers = this.getPrayerTimeViaDate(this.monthlyPrayers);
