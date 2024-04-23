@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { combineLatest } from 'rxjs';
 import { PrayerTimeName } from 'src/app/shared/enums/date.enum';
 import { NextPrayerInfo, PrayerTime, Solat } from 'src/app/shared/interfaces/solat.model';
 import { DateFilterService } from 'src/app/shared/services/date-filter.service';
@@ -19,14 +20,27 @@ export class PrayerTimeTableComponent implements OnInit {
   constructor(private dateFilter: DateFilterService, private solatApi: SolatService, private cdr: ChangeDetectorRef){}
 
   ngOnInit(): void {
-    this.solatApi.getPrayerTimeByCode(this.solatApi.zone).subscribe((data: Solat) => {
+    this.initPrayerTimeTable();
+    combineLatest([this.solatApi.zone$, this.solatApi.district$]).subscribe(async ([zone, district]) => {
+      if (!zone || !district) {
+        return;
+      }
+      this.initPrayerTimeTable();
+    })
+  }
+
+
+  /**
+   * Initialize the prayer time table.
+   */
+  initPrayerTimeTable(): void {
+    this.solatApi.getPrayerTimeByCode().subscribe((data: Solat) => {
       const monthlyData = data;
-      const todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(monthlyData);
+      const todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(monthlyData) as PrayerTime;
       this.prayerInfo = this.filterPrayerTimes(todayPrayerTimes);
       this.cdr.detectChanges();
     });
   }
-
 
   /**
    * Filter the prayer times from the PrayerTime object.
