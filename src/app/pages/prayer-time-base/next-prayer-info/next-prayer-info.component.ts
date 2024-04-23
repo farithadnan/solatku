@@ -52,7 +52,6 @@ export class NextPrayerInfoComponent implements OnInit {
         return;
       }
       this.nextPrayer = await this.solatApi.calcNextPrayer();
-      console.log('nextPrayer', this.nextPrayer);
     })
 
     this.cdr.detectChanges();
