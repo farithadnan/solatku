@@ -1,0 +1,30 @@
+	<tui-select
+    [tuiTextfieldSize]="selectSize"
+    class="tui-space_top-3 tui-space_bottom-5"
+    [tuiTextfieldLabelOutside]="false"
+    [tuiTextfieldIconLeft]="'tuiIconMapPin'"
+    [(ngModel)]="value"
+>
+    {{ placeholder }}
+    <tui-data-list *tuiDataList>
+        <tui-opt-group *ngFor="let zone of zones" [label]="zone.negeri">
+          <button
+          *ngFor="let daerah of zone.data"
+            tuiOption
+            [value]="daerah.name"
+          >
+            {{ daerah.name | titlecase }}
+          </button>
+        </tui-opt-group>
+    </tui-data-list>
+</tui-select>
+
+<button
+    [disabled]="!value"
+    size="m"
+    tuiButton
+    type="button"
+    (click)="submit()"
+>
+    Tukar
+</button>
