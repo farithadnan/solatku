@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { combineLatest } from 'rxjs';
 import { PrayerTimeName } from 'src/app/shared/enums/date.enum';
 import { NextPrayerInfo, PrayerTime, Solat } from 'src/app/shared/interfaces/solat.model';
 import { DateFilterService } from 'src/app/shared/services/date-filter.service';
@@ -11,20 +12,35 @@ import { SolatService } from 'src/app/shared/services/solat.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PrayerTimeTableComponent implements OnInit {
-  @Input() prayerTimes!: PrayerTime;
-  @Input() monthlyTimes!: Solat;
-
   prayerInfo: NextPrayerInfo[] = [];
 
   errorTitle: string = 'Ralat';
   errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
 
-  constructor(private dateFilter: DateFilterService, private solatService: SolatService){}
+  constructor(private dateFilter: DateFilterService, private solatApi: SolatService, private cdr: ChangeDetectorRef){}
 
   ngOnInit(): void {
-    this.prayerInfo = this.filterPrayerTimes(this.prayerTimes);
+    this.initPrayerTimeTable();
+    combineLatest([this.solatApi.zone$, this.solatApi.district$]).subscribe(async ([zone, district]) => {
+      if (!zone || !district) {
+        return;
+      }
+      this.initPrayerTimeTable();
+    })
   }
 
+
+  /**
+   * Initialize the prayer time table.
+   */
+  initPrayerTimeTable(): void {
+    this.solatApi.getPrayerTimeByCode().subscribe((data: Solat) => {
+      const monthlyData = data;
+      const todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(monthlyData) as PrayerTime;
+      this.prayerInfo = this.filterPrayerTimes(todayPrayerTimes);
+      this.cdr.detectChanges();
+    });
+  }
 
   /**
    * Filter the prayer times from the PrayerTime object.
@@ -40,13 +56,13 @@ export class PrayerTimeTableComponent implements OnInit {
           if (prayerName === 'Subuh') {
             return { name: 'Imsak', time: new Date(value * 1000 - 10 * 60000) }
           }
-          return { name: prayerName, time: this.dateFilter.epochToJsDate(value) }
+          return { name: prayerName, time: this.dateFilter.unixToDate(value) }
         }
         return null;
       })
       .filter(info => info !== null) as NextPrayerInfo[];
 
-    return this.solatService.sortByPrayer(prayerList);
+    return this.solatApi.sortByPrayer(prayerList);
   }
 
   /**
