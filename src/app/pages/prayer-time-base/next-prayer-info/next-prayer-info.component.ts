@@ -64,8 +64,11 @@ export class NextPrayerInfoComponent implements OnInit {
           this.toastr.error('Zon can\'t be set. Please try again.');
           return;
         }
+        localStorage.setItem('district', result.name);
+        localStorage.setItem('zone', result.jakimCode);
+        this.solatApi.zone = result.jakimCode;
+        this.solatApi.district = result.name;
 
-        this.solatApi.setStorage(result.jakimCode, result.name);
         this.nextPrayer = this.solatApi.calcNextPrayer();
         this.solatApi.setPrayersData(result.jakimCode);
 

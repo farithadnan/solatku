@@ -34,36 +34,25 @@ export class SolatService{
               private toastr: ToastrService,
               private dt: DateFilterService,
               private http: HttpClient) {
-    this.refreshPrayerTime();
-  }
-
-
-  /**
-   * Refresh the prayer time data.
-   */
-  refreshPrayerTime() {
-    this.setStorage();
+    this.initStorage();
     this.setPrayersData();
   }
 
   /**
    * Check & set the local storage for the zone and district.
+   * @summary This trigger during the first time the app is loaded. Where the zone and district is not set yet in the local storage.
    */
-  setStorage(zone?: string, district?: string) {
-
-    console.log("zone", zone);
-    console.log("district", district);
-
+  initStorage() {
     if (localStorage.getItem('zone')) {
       this.zone = localStorage.getItem('zone')!;
     } else {
-      localStorage.setItem('zone', zone ?? this.zone);
+      localStorage.setItem('zone', this.zone);
     }
 
     if (localStorage.getItem('district')) {
       this.district = localStorage.getItem('district')!;
     } else {
-      localStorage.setItem('district', district ?? this.district);
+      localStorage.setItem('district', this.district);
     }
   }
 
