@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http"
-
-import { Observable, Subject, catchError, lastValueFrom, throwError } from "rxjs";
+import { BehaviorSubject, Observable, Subject, catchError, lastValueFrom, throwError } from "rxjs";
 import { ToastrService } from "ngx-toastr";
 
 import { ApiService } from "./api.service";
@@ -13,8 +12,12 @@ import { IslamicMonth, PrayerTimeName } from "../enums/date.enum";
   providedIn: 'root'
 })
 export class SolatService{
-  zone: string = 'WLY01';
-  district: string = 'Kuala Lumpur, Putrajaya';
+  private zoneSubject = new BehaviorSubject<string>('WLY01');
+  private districtSubject = new BehaviorSubject<string>('Kuala Lumpur, Putrajaya');
+  nextPrayerInSeconds$ = new Subject<number>();
+
+  zone$ = this.zoneSubject.asObservable();
+  district$ = this.districtSubject.asObservable();
   prayerNames: PrayerTimeName[] = [
     PrayerTimeName.imsak,
     PrayerTimeName.fajr,
@@ -28,14 +31,11 @@ export class SolatService{
   todayPrayers!: PrayerTime;
   monthlyPrayers!: Solat;
 
-  nextPrayerInSeconds$ = new Subject<number>();
-
   constructor(private api: ApiService,
               private toastr: ToastrService,
               private dt: DateFilterService,
               private http: HttpClient) {
     this.initStorage();
-    this.setPrayersData();
   }
 
   /**
@@ -44,32 +44,51 @@ export class SolatService{
    */
   initStorage() {
     if (localStorage.getItem('zone')) {
-      this.zone = localStorage.getItem('zone')!;
+      const zone = localStorage.getItem('zone')!;
+      this.updateZone(zone);
     } else {
-      localStorage.setItem('zone', this.zone);
+      localStorage.setItem('zone', this.zoneSubject.getValue());
     }
 
     if (localStorage.getItem('district')) {
-      this.district = localStorage.getItem('district')!;
+      const district = localStorage.getItem('district')!;
+      this.updateDistrict(district);
     } else {
-      localStorage.setItem('district', this.district);
+      localStorage.setItem('district', this.districtSubject.getValue());
     }
+  }
+
+  /**
+   * Update zone's based on user selection.
+   * @param zone a string that represent the zone code in Malaysia.
+   */
+  updateZone(zone: string) {
+    localStorage.setItem('zone', zone);
+    this.zoneSubject.next(zone);
+  }
+
+  /**
+   * Update district's based on user selection.
+   * @param district a string that represent the district in Malaysia.
+   */
+  updateDistrict(district: string) {
+    localStorage.setItem('district', district);
+    this.districtSubject.next(district);
   }
 
   /**
    * Initialize the monthly prayer times.
    * @param zone a string that represent the zone code in Malaysia.
    */
-  async setPrayersData(zone = this.zone) {
-    console.log("Prayer zone: ", zone);
-
+  async setPrayersData(zone = this.zoneSubject.getValue()) {
     try {
-      lastValueFrom(this.getPrayerTimeByCode(zone)).then((prayers: Solat) => {
-        this.monthlyPrayers = prayers;
-        this.todayPrayers = this.getPrayerTimeViaDate(this.monthlyPrayers);
-      });
+      const prayers: Solat = await lastValueFrom(this.getPrayerTimeByCode(zone));
+      const monthlyPrayers = prayers;
+      const todayPrayers = this.getPrayerTimeViaDate(monthlyPrayers);
+      return { monthlyPrayers, todayPrayers };
     } catch (error) {
       this.toastr.error('Failed to fetch prayer times', 'Error');
+      throw error;
     }
   }
 
@@ -77,24 +96,28 @@ export class SolatService{
    * Calculate the next prayer time.
    * @returns a NextPrayerInfo object that contains the next prayer time.
    */
-  calcNextPrayer(): NextPrayerInfo {
-    const now = new Date();
-    const mappedTodaysData = this.mapPrayerTimes(this.todayPrayers);
-    const nextPrayerList = this.filterUpcomingPrayers(mappedTodaysData, now);
-    let nextPrayer: NextPrayerInfo;
+  async calcNextPrayer(): Promise<NextPrayerInfo> {
+    try {
+      const now = new Date();
+      const { monthlyPrayers, todayPrayers } =  await this.setPrayersData();
 
-    if (nextPrayerList.length < 1) {
-      // Fetch tomorrow's prayer times
-      nextPrayer = this.getUpcomingFajrTimes(now, this.monthlyPrayers);
+      const mappedTodaysData = this.mapPrayerTimes(todayPrayers!);
+      const nextPrayerList = this.filterUpcomingPrayers(mappedTodaysData, now);
 
-    } else {
-      // Sort future by closest to the current time.
-      nextPrayer = this.sortByTime(nextPrayerList)[0];
+      let nextPrayer: NextPrayerInfo;
+      if (nextPrayerList.length < 1) {
+        nextPrayer = this.getUpcomingFajrTimes(now, monthlyPrayers);
+      } else {
+        nextPrayer = this.sortByTime(nextPrayerList)[0];
+      }
+
+      nextPrayer.inSeconds = this.getDurationInSeconds(nextPrayer.time);
+      this.nextPrayerInSeconds$.next(nextPrayer.inSeconds);
+      return nextPrayer;
+    } catch (error) {
+      this.toastr.error('Failed to fetch prayer times', 'Error');
+      throw error;
     }
-
-    nextPrayer.inSeconds = this.getDurationInSeconds(nextPrayer.time);
-    this.nextPrayerInSeconds$.next(nextPrayer.inSeconds);
-    return nextPrayer;
   }
 
   /**
@@ -104,18 +127,17 @@ export class SolatService{
  * @param month The month. Defaults to the current month (1-indexed).
  * @returns a Solat object that contains the prayer times.
  */
-  getPrayerTimeByCode(zone: string, year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1): Observable<Solat> {
+  getPrayerTimeByCode(zone: string = this.zoneSubject.getValue(), year: number = new Date().getFullYear(), month: number = new Date().getMonth() + 1): Observable<Solat> {
     const params = this.getPrayerTimeParams(year, month);
-
     return this.http.get<Solat>(`${this.api.prayerTimeUri}/${zone}`, { params: params }).pipe(
       catchError((error: HttpErrorResponse): Observable<any> => {
+        let errorMessage = 'An unexpected error occurred';
         if (error.status === 404) {
-          this.toastr.error('Data not found. Probably the solat data for the given month and year is not retrived yet. Please contact developer.');
+          errorMessage = 'Data not found. The solat data for the given month and year may not be available yet. Please contact the developer.';
         } else if (error.status === 500) {
-          this.toastr.error('Error when parsing the parameter provided.');
-        } else {
-          this.toastr.error('An unexpected error occurred');
+          errorMessage = 'Error occurred when parsing the provided parameters.';
         }
+        this.toastr.error(errorMessage, 'Error');
         return throwError(() => error);
       })
     )
@@ -127,22 +149,14 @@ export class SolatService{
    * @param date a Date object that represent the specific date. Default is today.
    * @returns a Solat object that contains the prayer time on the specific date.
    */
-  getPrayerTimeViaDate(data: Solat, date: Date = new Date()): PrayerTime {
+  getPrayerTimeViaDate(data: Solat, date: Date = new Date()): PrayerTime | undefined {
     if (!data) {
-      this.toastr.error("Data prayer is empty!");
-      throw new Error('Data is empty');
+      this.toastr.error("Prayer data is empty!");
+      return undefined;
     }
 
-    let prayerTime!: PrayerTime;
     const day = this.dt.splitGregorian(date, 'dd-MM-yyyy', '-')[0];
-
-    data.prayers.filter(prayer => {
-      if (prayer.day == day) {
-        prayerTime = prayer;
-      }
-    })
-
-    return prayerTime;
+    return data.prayers.find(prayer => prayer.day == day)!;
   }
 
   /**
@@ -150,7 +164,7 @@ export class SolatService{
    * @param prayerList a list of NextPrayerInfo array.
    * @returns a sorted list of NextPrayerInfo array.
    */
-  sortByPrayer(prayerList: NextPrayerInfo[]) {
+  sortByPrayer(prayerList: NextPrayerInfo[]): NextPrayerInfo[] {
     return prayerList.sort((a, b) => this.prayerNames.indexOf(a.name as PrayerTimeName) - this.prayerNames.indexOf(b.name as PrayerTimeName));
   }
 
@@ -173,15 +187,15 @@ export class SolatService{
     return this.prayerNames.map((name, index) => {
       const time = index == 0 ? this.calcImsakTime(prayerTimes[index]) : this.dt.unixToDate(prayerTimes[index]);
       const inSeconds = this.getDurationInSeconds(time);
-      const hijriDate = this.getTodayHijriDate(originData.hijri);
+      const hijriDate = this.getFormattedHijriDate(originData.hijri);
 
       return {
-        name: name,
-        time: time,
-        inSeconds: inSeconds,
-        hijriDate: hijriDate,
-        zone: this.zone,
-        district: this.district
+        name,
+        time,
+        inSeconds,
+        hijriDate,
+        zone: this.zoneSubject.getValue(),
+        district: this.districtSubject.getValue()
       };
     });
   }
@@ -191,7 +205,7 @@ export class SolatService{
    * @param hijriDate todays hijri date.
    * @returns a formatted hijri date.
    */
-  private getTodayHijriDate(hijriDate: string) {
+  private getFormattedHijriDate(hijriDate: string): string {
     const [year, month, day] = this.dt.splitHijri(hijriDate, '-');
     // -1 because it uses 0-based index.
     const monthName = Object.values(IslamicMonth)[month - 1];
@@ -204,7 +218,7 @@ export class SolatService{
  * @param month a number that represent the month.
  * @returns a HttpParams object that contains the year and month.
  */
-  private getPrayerTimeParams(year?: number, month?: number) {
+  private getPrayerTimeParams(year?: number, month?: number): HttpParams {
     let params = new HttpParams();
     if (year) {
       params = params.set('year', year.toString());
@@ -220,9 +234,10 @@ export class SolatService{
  * @param fajrTimestamp a number that represent the fajr time.
  * @returns a Date() object that represent the imsak time.
  */
-  private calcImsakTime(fajrTimestamp: number) {
+  private calcImsakTime(fajrTimestamp: number): Date {
     const fajrTime = this.dt.unixToDate(fajrTimestamp);
-    return new Date(fajrTime.getTime() - 10 * 60000);
+    const imsakTime = new Date(fajrTime.getTime() - 10 * 60000);
+    return imsakTime;
   }
 
   /**
@@ -230,8 +245,8 @@ export class SolatService{
   * @param todayPrayerTimes list of today's prayer times.
   * @returns a sorted prayer times.
   */
-  private sortByTime(todayPrayerTimes: NextPrayerInfo[]) {
-    return todayPrayerTimes.sort((now, nxt) => now.time.getTime() - nxt.time.getTime());
+  private sortByTime(todayPrayerTimes: NextPrayerInfo[]): NextPrayerInfo[] {
+    return todayPrayerTimes.sort((a, b) => a.time.getTime() - b.time.getTime());
   }
 
   /**
@@ -256,22 +271,24 @@ export class SolatService{
     let tomorrow = todayDate;
     tomorrow.setDate(todayDate.getDate() + 1);
 
-    const tomorrowPrayerTimes = this.getPrayerTimeViaDate(monthlyTimes, tomorrow);
-    const fajrDatetime = this.dt.unixToDate(tomorrowPrayerTimes.fajr, 1);
+    const tomorrowPrayerTimes = this.getPrayerTimeViaDate(monthlyTimes, tomorrow) as PrayerTime;
+    if (!tomorrowPrayerTimes || !tomorrowPrayerTimes.fajr) {
+      throw new Error("Failed to retrieve Fajr prayer time for tomorrow.");
+    }
 
+    const fajrDatetime = this.dt.unixToDate(tomorrowPrayerTimes.fajr, 1);
     const hijriDate = this.dt.splitHijri(tomorrowPrayerTimes.hijri, '-');
     const islamicMonthArray = Object.values(IslamicMonth);
     const hijriString = `${hijriDate[2]} ${islamicMonthArray[hijriDate[1] - 1]} ${hijriDate[0]}`;
 
-    const nextSubuhInfo: NextPrayerInfo = {
+    return {
       name: PrayerTimeName.fajr,
       time: fajrDatetime,
       inSeconds: this.getDurationInSeconds(fajrDatetime),
       hijriDate: hijriString,
-      zone: this.zone,
-      district: this.district
+      zone: this.zoneSubject.getValue(),
+      district: this.districtSubject.getValue(),
     }
-    return nextSubuhInfo;
   }
 
   /**
@@ -280,8 +297,12 @@ export class SolatService{
  * @returns a duration in seconds.
  */
   private getDurationInSeconds(targetDate: Date) {
-    const currentDate = new Date();
-    const milliseconds = targetDate.getTime() - currentDate.getTime();
+    if (!targetDate || isNaN(targetDate.getTime())) {
+      throw new Error("Invalid target date provided.");
+    }
+
+    const now = new Date();
+    const milliseconds = targetDate.getTime() - now.getTime();
     const seconds = Math.floor(milliseconds / 1000);
     return seconds;
   }
