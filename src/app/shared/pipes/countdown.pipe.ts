@@ -5,11 +5,15 @@ import { Observable, Subject, map, takeWhile, timer } from "rxjs";
   name: 'countdown'
 })
 export class CountdownPipe implements PipeTransform {
-  transform(duration: number): Observable<string> {
+  transform(duration: number, completionEmitter: Subject<void>): Observable<string> {
     return timer(0, 1000).pipe(
       map((value) => duration - value),
       takeWhile((value) => value >= 0),
       map((value) => {
+        if (value === 0) {
+          completionEmitter.next();
+        }
+
         const hours = Math.floor(value / 3600);
         const minutes = Math.floor((value % 3600) / 60);
         const seconds = value % 60;
