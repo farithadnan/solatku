@@ -13,6 +13,8 @@ import { SolatService } from 'src/app/shared/services/solat.service';
 })
 export class PrayerTimeTableComponent implements OnInit {
   prayerInfo: NextPrayerInfo[] = [];
+  icons: string[] = ['tuiIconMoon', 'tuiIconMoon', 'tuiIconSunrise', 'tuiIconSun', 'tuiIconSunset', 'tuiIconMoon', 'tuiIconMoon']
+
 
   errorTitle: string = 'Ralat';
   errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
@@ -38,7 +40,20 @@ export class PrayerTimeTableComponent implements OnInit {
       const monthlyData = data;
       const todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(monthlyData) as PrayerTime;
       this.prayerInfo = this.filterPrayerTimes(todayPrayerTimes);
+      this.prayerInfo = this.setPrayerIcon(this.prayerInfo);
       this.cdr.detectChanges();
+    });
+  }
+
+  /**
+   * Set the icon for each prayer time.
+   * @param prayerInfo a list of NextPrayerInfo
+   * @returns a list of NextPrayerInfo with icon
+   */
+  private setPrayerIcon(prayerInfo: NextPrayerInfo[]): NextPrayerInfo[] {
+    return prayerInfo.map((info, index) => {
+      info.icon = this.icons[index];
+      return info;
     });
   }
 
@@ -54,12 +69,16 @@ export class PrayerTimeTableComponent implements OnInit {
         const prayerName = this.getPrayerName(key as keyof typeof PrayerTimeName);
         if (prayerName) {
           if (prayerName === 'Subuh') {
-            return { name: 'Imsak', time: new Date(value * 1000 - 10 * 60000) }
+            return [
+              { name: 'Imsak', time: new Date(value * 1000 - 10 * 60000) },
+              { name: prayerName, time: this.dateFilter.unixToDate(value) }
+            ]
           }
           return { name: prayerName, time: this.dateFilter.unixToDate(value) }
         }
         return null;
       })
+      .flat()
       .filter(info => info !== null) as NextPrayerInfo[];
 
     return this.solatApi.sortByPrayer(prayerList);
