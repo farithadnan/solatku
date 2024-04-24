@@ -18,11 +18,10 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class NextPrayerInfoComponent implements OnInit {
   nextPrayer!: NextPrayerInfo;
-  nextPrayerSecondsSubject: Subject<void> = new Subject<void>();
   zoneData: GroupZone[] = [];
+  loading: boolean = false;
 
-  errorTitle: string = 'Ralat';
-  errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.';
+  nextPrayerSecondsSubject: Subject<void> = new Subject<void>();
 
   constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
               @Inject(Injector) private readonly injector: Injector,
@@ -33,6 +32,7 @@ export class NextPrayerInfoComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.loading = true;
     this.nextPrayer = await this.solatApi.calcNextPrayer();
 
     // Fetch the zones data and group them by state.
@@ -43,6 +43,7 @@ export class NextPrayerInfoComponent implements OnInit {
     // Subscribe to the zone and district changes.
     combineLatest([this.solatApi.zone$, this.solatApi.district$]).subscribe(async ([zone, district]) => {
       if (!zone || !district) {
+        this.loading = false;
         return;
       }
       this.nextPrayer = await this.solatApi.calcNextPrayer();
@@ -53,6 +54,7 @@ export class NextPrayerInfoComponent implements OnInit {
     });
 
     this.cdr.detectChanges();
+    this.loading = false;
   }
 
   /**
@@ -69,6 +71,7 @@ export class NextPrayerInfoComponent implements OnInit {
       }
     ).subscribe({
       next: data => {
+        this.loading = true;
         const result = data as unknown as Daerah;
 
         if (!result || !result.jakimCode || !result.name) {
@@ -77,10 +80,12 @@ export class NextPrayerInfoComponent implements OnInit {
         }
         this.solatApi.updateZone(result.jakimCode);
         this.solatApi.updateDistrict(result.name);
+        this.loading = false;
       },
       complete() {
         console.log("Dialog closed");
       },
     })
+    this.loading = false;
   }
 }

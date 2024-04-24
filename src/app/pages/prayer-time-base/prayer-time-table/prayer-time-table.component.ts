@@ -15,21 +15,21 @@ export class PrayerTimeTableComponent implements OnInit {
   prayerInfo: NextPrayerInfo[] = [];
   highlightedRow: boolean[] = [];
   icons: string[] = ['tuiIconMoon', 'tuiIconMoon', 'tuiIconSunrise', 'tuiIconSun', 'tuiIconSunset', 'tuiIconMoon', 'tuiIconMoon']
-
-
-  errorTitle: string = 'Ralat';
-  errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
+  loading: boolean = false;
 
   constructor(private dateFilter: DateFilterService, private solatApi: SolatService, private cdr: ChangeDetectorRef){}
 
   ngOnInit(): void {
+    this.loading = true;
     this.initPrayerTimeTable();
     combineLatest([this.solatApi.zone$, this.solatApi.district$]).subscribe(async ([zone, district]) => {
       if (!zone || !district) {
+        this.loading = false;
         return;
       }
       this.initPrayerTimeTable();
     })
+    this.loading = false;
   }
 
 

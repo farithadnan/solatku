@@ -10,17 +10,18 @@ import { SolatService } from 'src/app/shared/services/solat.service';
 export class PrayerTimeBaseComponent implements OnInit {
   monthlyData!: Solat;
   todayPrayerTimes!: PrayerTime;
-
-  errorTitle: string = 'Ralat';
-  errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.'
+  loading: boolean = false;
 
   constructor(private solatApi: SolatService) {}
 
   ngOnInit(): void {
+    this.loading = true;
+
     this.solatApi.initStorage();
     this.solatApi.getPrayerTimeByCode().subscribe((data: Solat) => {
       this.monthlyData = data;
       this.todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(this.monthlyData) as PrayerTime;
+      this.loading = false;
     });
   }
 }
