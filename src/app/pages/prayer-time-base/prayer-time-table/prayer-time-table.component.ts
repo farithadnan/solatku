@@ -13,6 +13,7 @@ import { SolatService } from 'src/app/shared/services/solat.service';
 })
 export class PrayerTimeTableComponent implements OnInit {
   prayerInfo: NextPrayerInfo[] = [];
+  highlightedRow: boolean[] = [];
   icons: string[] = ['tuiIconMoon', 'tuiIconMoon', 'tuiIconSunrise', 'tuiIconSun', 'tuiIconSunset', 'tuiIconMoon', 'tuiIconMoon']
 
 
@@ -40,9 +41,31 @@ export class PrayerTimeTableComponent implements OnInit {
       const monthlyData = data;
       const todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(monthlyData) as PrayerTime;
       this.prayerInfo = this.filterPrayerTimes(todayPrayerTimes);
+      this.highlightedRow = this.prayerInfo.map((info, index) => this.isCurrentPrayer(info.name, info.time, this.prayerInfo[index + 1]?.time));
       this.prayerInfo = this.setPrayerIcon(this.prayerInfo);
       this.cdr.detectChanges();
     });
+  }
+
+  /**
+   * Check if the current time is within the prayer time.
+   * @param prayerName a prayer name.
+   * @param startTime a start time of the prayer.
+   * @param endTime a start time of the next prayer.
+   * @returns a boolean value.
+   */
+  isCurrentPrayer(prayerName: string, startTime: Date, nextPrayerTime: Date | undefined): boolean {
+    if (!nextPrayerTime) {
+      return false;
+    }
+
+    // Syuruk period is 28 minutes.
+    if (prayerName === PrayerTimeName.syuruk) {
+      nextPrayerTime = new Date(startTime.getTime() + 28 * 60000);
+    }
+
+    const now = new Date();
+    return now >= startTime && now < nextPrayerTime;
   }
 
   /**
@@ -68,9 +91,9 @@ export class PrayerTimeTableComponent implements OnInit {
       .map(([key, value]) => {
         const prayerName = this.getPrayerName(key as keyof typeof PrayerTimeName);
         if (prayerName) {
-          if (prayerName === 'Subuh') {
+          if (prayerName === PrayerTimeName.fajr) {
             return [
-              { name: 'Imsak', time: new Date(value * 1000 - 10 * 60000) },
+              { name: PrayerTimeName.imsak, time: new Date(value * 1000 - 10 * 60000) },
               { name: prayerName, time: this.dateFilter.unixToDate(value) }
             ]
           }
