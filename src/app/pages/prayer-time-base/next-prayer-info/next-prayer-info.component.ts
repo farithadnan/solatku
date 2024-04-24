@@ -81,6 +81,7 @@ export class NextPrayerInfoComponent implements OnInit {
         this.solatApi.updateZone(result.jakimCode);
         this.solatApi.updateDistrict(result.name);
         this.loading = false;
+        this.toastr.success('Zon has been set successfully.');
       },
       complete() {
         console.log("Dialog closed");
