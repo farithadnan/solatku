@@ -23,11 +23,11 @@ export class ZoneService {
     return this.http.get<Zone[]>(url).pipe(
       catchError((error: HttpErrorResponse): Observable<any> => {
         if (error.status === 404) {
-          this.toastr.error('Provided zone code doesn\'t exist');
+          this.toastr.error('Provided zone code doesn\'t exist', 'Error');
         } else if (error.status === 500) {
-          this.toastr.error('Internal server error. An error occured while processing your request');
+          this.toastr.error('Internal server error. An error occured while processing your request', 'Error');
         } else {
-          this.toastr.error('An unexpected error occurred');
+          this.toastr.error('An unexpected error occurred', 'Error');
         }
         return throwError(() => error);
       })

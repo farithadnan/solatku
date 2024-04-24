@@ -34,7 +34,7 @@ export class ZoneSwitcherComponent implements OnInit{
       const zone = this.zoneApi.getJakimCode(this.value, this.zones);
 
       if (zone == '') {
-        this.toastr.error('Zone not found');
+        this.toastr.error('Zone not found', 'Error');
         return;
       }
 

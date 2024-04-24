@@ -148,7 +148,7 @@ export class SolatService{
    */
   getPrayerTimeViaDate(data: Solat, date: Date = new Date()): PrayerTime | undefined {
     if (!data) {
-      this.toastr.error("Prayer data is empty!");
+      this.toastr.error("Prayer data is empty!", "Error");
       return undefined;
     }
 

@@ -75,13 +75,13 @@ export class NextPrayerInfoComponent implements OnInit {
         const result = data as unknown as Daerah;
 
         if (!result || !result.jakimCode || !result.name) {
-          this.toastr.error('Zon can\'t be set. Please try again.');
+          this.toastr.error('Zon can\'t be set. Please try again.', 'Error');
           return;
         }
         this.solatApi.updateZone(result.jakimCode);
         this.solatApi.updateDistrict(result.name);
         this.loading = false;
-        this.toastr.success('Zon has been set successfully.');
+        this.toastr.success('Zon has been set successfully.', 'Success');
       },
       complete() {
         console.log("Dialog closed");
