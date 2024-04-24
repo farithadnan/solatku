@@ -4,7 +4,7 @@ import { SolatService } from 'src/app/shared/services/solat.service';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { TuiDialogService } from '@taiga-ui/core';
 import { ZoneSwitcherComponent } from 'src/app/shared/dialogs/zone-switcher/zone-switcher.component';
-import { takeWhile, combineLatest } from 'rxjs';
+import { Subject, combineLatest } from 'rxjs';
 import { Daerah, GroupZone, Zone } from 'src/app/shared/interfaces/zone.model';
 import { ZoneService } from 'src/app/shared/services/zone.service';
 import { ToastrService } from 'ngx-toastr';
@@ -18,6 +18,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class NextPrayerInfoComponent implements OnInit {
   nextPrayer!: NextPrayerInfo;
+  nextPrayerSecondsSubject: Subject<void> = new Subject<void>();
   zoneData: GroupZone[] = [];
 
   errorTitle: string = 'Ralat';
@@ -33,13 +34,6 @@ export class NextPrayerInfoComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.nextPrayer = await this.solatApi.calcNextPrayer();
-    // Subscribe to the next prayer in seconds if it is less than 0.
-    this.solatApi.nextPrayerInSeconds$.pipe(takeWhile(seconds => seconds >= 0))
-    .subscribe(async seconds => {
-      if (seconds === 0) {
-        this.nextPrayer = await this.solatApi.calcNextPrayer();
-      }
-    });
 
     // Fetch the zones data and group them by state.
     this.zoneApi.getZones().subscribe((data: Zone[]) => {
@@ -53,6 +47,10 @@ export class NextPrayerInfoComponent implements OnInit {
       }
       this.nextPrayer = await this.solatApi.calcNextPrayer();
     })
+
+    this.nextPrayerSecondsSubject.subscribe(() => {
+      window.location.reload();
+    });
 
     this.cdr.detectChanges();
   }

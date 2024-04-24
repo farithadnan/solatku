@@ -10,7 +10,7 @@
             {{ nextPrayer.hijriDate }} • {{ nextPrayer.time | date: 'dd MMM yyyy' }}
           </p>
           <div class="tui-island__paragraph tui-text_body-m-2 countdown-lbl">
-              <span>{{ nextPrayer.inSeconds | countdown | async }}</span>
+              <span>{{ nextPrayer.inSeconds | countdown: nextPrayerSecondsSubject | async}}</span>
           </div>
         </div>
         <button
