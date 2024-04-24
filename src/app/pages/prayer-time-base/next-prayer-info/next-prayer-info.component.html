@@ -3,7 +3,7 @@
   [overlay]="true"
   [size]="'xxl'"
   [showLoader]="loading">
-  <section class="container">
+  <section class="container" *ngIf="nextPrayer;">
     <tui-island size="m" class="t-island">
       <div class="tui-island__content">
         <div  class="content-container">
