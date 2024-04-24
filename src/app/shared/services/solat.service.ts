@@ -14,7 +14,6 @@ import { IslamicMonth, PrayerTimeName } from "../enums/date.enum";
 export class SolatService{
   private zoneSubject = new BehaviorSubject<string>('WLY01');
   private districtSubject = new BehaviorSubject<string>('Kuala Lumpur, Putrajaya');
-  nextPrayerInSeconds$ = new Subject<number>();
 
   zone$ = this.zoneSubject.asObservable();
   district$ = this.districtSubject.asObservable();
@@ -91,7 +90,6 @@ export class SolatService{
       throw error;
     }
   }
-
   /**
    * Calculate the next prayer time.
    * @returns a NextPrayerInfo object that contains the next prayer time.
@@ -112,7 +110,6 @@ export class SolatService{
       }
 
       nextPrayer.inSeconds = this.getDurationInSeconds(nextPrayer.time);
-      this.nextPrayerInSeconds$.next(nextPrayer.inSeconds);
       return nextPrayer;
     } catch (error) {
       this.toastr.error('Failed to fetch prayer times', 'Error');
@@ -151,7 +148,7 @@ export class SolatService{
    */
   getPrayerTimeViaDate(data: Solat, date: Date = new Date()): PrayerTime | undefined {
     if (!data) {
-      this.toastr.error("Prayer data is empty!");
+      this.toastr.error("Prayer data is empty!", "Error");
       return undefined;
     }
 

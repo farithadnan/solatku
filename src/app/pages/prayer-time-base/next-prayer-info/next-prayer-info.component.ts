@@ -4,7 +4,7 @@ import { SolatService } from 'src/app/shared/services/solat.service';
 import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { TuiDialogService } from '@taiga-ui/core';
 import { ZoneSwitcherComponent } from 'src/app/shared/dialogs/zone-switcher/zone-switcher.component';
-import { takeWhile, combineLatest } from 'rxjs';
+import { Subject, combineLatest } from 'rxjs';
 import { Daerah, GroupZone, Zone } from 'src/app/shared/interfaces/zone.model';
 import { ZoneService } from 'src/app/shared/services/zone.service';
 import { ToastrService } from 'ngx-toastr';
@@ -19,9 +19,9 @@ import { ToastrService } from 'ngx-toastr';
 export class NextPrayerInfoComponent implements OnInit {
   nextPrayer!: NextPrayerInfo;
   zoneData: GroupZone[] = [];
+  loading: boolean = false;
 
-  errorTitle: string = 'Ralat';
-  errorMessage: string = 'Maaf, data waktu solat tidak tersedia. Sila cuba sebentar lagi.';
+  nextPrayerSecondsSubject: Subject<void> = new Subject<void>();
 
   constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
               @Inject(Injector) private readonly injector: Injector,
@@ -32,14 +32,8 @@ export class NextPrayerInfoComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.loading = true;
     this.nextPrayer = await this.solatApi.calcNextPrayer();
-    // Subscribe to the next prayer in seconds if it is less than 0.
-    this.solatApi.nextPrayerInSeconds$.pipe(takeWhile(seconds => seconds >= 0))
-    .subscribe(async seconds => {
-      if (seconds === 0) {
-        this.nextPrayer = await this.solatApi.calcNextPrayer();
-      }
-    });
 
     // Fetch the zones data and group them by state.
     this.zoneApi.getZones().subscribe((data: Zone[]) => {
@@ -49,12 +43,18 @@ export class NextPrayerInfoComponent implements OnInit {
     // Subscribe to the zone and district changes.
     combineLatest([this.solatApi.zone$, this.solatApi.district$]).subscribe(async ([zone, district]) => {
       if (!zone || !district) {
+        this.loading = false;
         return;
       }
       this.nextPrayer = await this.solatApi.calcNextPrayer();
     })
 
+    this.nextPrayerSecondsSubject.subscribe(() => {
+      window.location.reload();
+    });
+
     this.cdr.detectChanges();
+    this.loading = false;
   }
 
   /**
@@ -71,18 +71,22 @@ export class NextPrayerInfoComponent implements OnInit {
       }
     ).subscribe({
       next: data => {
+        this.loading = true;
         const result = data as unknown as Daerah;
 
         if (!result || !result.jakimCode || !result.name) {
-          this.toastr.error('Zon can\'t be set. Please try again.');
+          this.toastr.error('Zon can\'t be set. Please try again.', 'Error');
           return;
         }
         this.solatApi.updateZone(result.jakimCode);
         this.solatApi.updateDistrict(result.name);
+        this.loading = false;
+        this.toastr.success('Zon has been set successfully.', 'Success');
       },
       complete() {
         console.log("Dialog closed");
       },
     })
+    this.loading = false;
   }
 }

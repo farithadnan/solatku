@@ -1,17 +1,10 @@
-
-<ng-template [ngIf]="todayPrayerTimes && monthlyData">
-  <app-next-prayer-info>
-  </app-next-prayer-info>
-  <app-prayer-time-table>
-  </app-prayer-time-table>
-</ng-template>
-
-<ng-template [ngIf]="!todayPrayerTimes || !monthlyData">
-  <app-notification
-    [title]="errorTitle"
-    [message]="errorMessage"
-    [status]="'error'"
-    [size]="'l'"
-  >
-  </app-notification>
-</ng-template>
+<tui-loader
+  [ngClass]="{spinner: loading}"
+  [overlay]="true"
+  [size]="'xxl'"
+  [showLoader]="loading">
+    <app-next-prayer-info>
+    </app-next-prayer-info>
+    <app-prayer-time-table>
+    </app-prayer-time-table>
+</tui-loader>

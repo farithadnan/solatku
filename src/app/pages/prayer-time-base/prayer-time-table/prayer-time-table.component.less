@@ -8,3 +8,30 @@
 .tui-table {
   width: 80vw;
 }
+
+.content-lbl {
+  font-weight: bold;
+}
+
+table tr:nth-child(even) {
+  background-color: #dfdfdf;
+}
+
+.highlight, .highlight td {
+  background-color: #526ed3 !important;
+  color: white;
+}
+
+.spinner {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+}
+
+/* For smaller screen */
+@media (max-width: 991px) {
+  .tui-table {
+    width: 80vw;
+  }
+}

@@ -10,26 +10,21 @@
 }
 
 .content-container {
-  width: 80vw
+  width: 80vw;
 }
 
 .next-prayer-title {
-  font-size: 2rem;
+  margin-bottom: 0.2rem;
+  margin-top: 0;
 }
 
-.next-prayer-lbl,
-.current-zone-lbl {
-  font-weight: 700;
+.paragraph-lbl {
+  margin-bottom: 0.3rem;
 }
 
-.next-prayer-title,
-.next-prayer-lbl,
-.current-zone-lbl {
-  margin-bottom: 0.8rem;
-}
-
-.next-prayer-lbl-sec {
-  font-size: 0.95rem;
+.countdown-lbl {
+  margin-top: 0.2rem;
+  font-weight: 800;
 }
 
 .next-prayer-section,
@@ -44,3 +39,20 @@
   margin-top: 0.8rem;
 }
 
+/* For smaller screen */
+@media (max-width: 991px) {
+  .container {
+    margin-top: 1rem;
+  }
+
+  .content-container {
+    width: 80vw;
+  }
+}
+
+.spinner {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+}

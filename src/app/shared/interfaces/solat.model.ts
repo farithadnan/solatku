@@ -25,4 +25,5 @@ export interface NextPrayerInfo {
   hijriDate: string,
   zone: string,
   district: string,
+  icon?: string
 }
