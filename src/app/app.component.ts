@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { TranslatorService } from './shared/services/translator.service';
 
 @Component({
   selector: 'app-root',
@@ -9,8 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class AppComponent {
   title = 'solatku';
 
-constructor(translate: TranslateService) {
-  translate.setDefaultLang('ms');
-  translate.use('ms');
+constructor(private translator: TranslatorService) {
+
 }
 }
