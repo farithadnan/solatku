@@ -1,0 +1,22 @@
+{
+	"solatku.info_section.button.change_zone.hint": "Change Zone",
+	"solatku.info_section.button.change_zone.label": "Change Zone",
+	"solatku.info_section.countdown.hour": "hours",
+	"solatku.info_section.countdown.minute": "minutes",
+	"solatku.info_section.countdown.remaining": "remaining",
+	"solatku.info_section.countdown.second": "seconds",
+	"solatku.info_section.title.label": "Next prayer",
+	"solatku.prayer.time.asr": "Asr",
+	"solatku.prayer.time.fajr": "Fajr",
+	"solatku.prayer.time.imsak": "Imsak",
+	"solatku.prayer.time.isha": "Isha",
+	"solatku.prayer.time.maghrib": "Maghrib",
+	"solatku.prayer.time.syuruq": "Syuruq",
+	"solatku.prayer.time.zuhr": "Zuhr",
+	"solatku.toastr.info_section.error_msg": "Zone cannot be set. Please try again.",
+	"solatku.toastr.info_section.success_msg": "Zone has been set successfully.",
+	"solatku.toastr.title.error": "Error",
+	"solatku.toastr.title.success": "Success",
+	"solatku.toastr.zone_switcher_section.error_msg": "Zone does not exist.",
+	"solatku.zone_switcher_section.button": "Update"
+}
