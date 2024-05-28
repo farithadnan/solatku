@@ -165,6 +165,37 @@ export class SolatService{
     return prayerList.sort((a, b) => this.prayerNames.indexOf(a.name as PrayerTimeName) - this.prayerNames.indexOf(b.name as PrayerTimeName));
   }
 
+  /**
+   * Get next fajr prayer info.
+   * @param todayDate current dateTime.
+   * @param monthlyTimes current month data of prayer time info.
+   * @returns The next fajr prayer time info.
+   */
+  getUpcomingFajrTimes(todayDate: Date, monthlyTimes: Solat) {
+    let tomorrow = todayDate;
+    tomorrow.setDate(todayDate.getDate() + 1);
+
+    const tomorrowPrayerTimes = this.getPrayerTimeViaDate(monthlyTimes, tomorrow) as PrayerTime;
+    if (!tomorrowPrayerTimes || !tomorrowPrayerTimes.fajr) {
+      throw new Error("Failed to retrieve Fajr prayer time for tomorrow.");
+    }
+
+    const fajrDatetime = this.dt.unixToDate(tomorrowPrayerTimes.fajr, 1);
+    const hijriDate = this.dt.splitHijri(tomorrowPrayerTimes.hijri, '-');
+    const islamicMonthArray = Object.values(IslamicMonth);
+    const hijriString = `${hijriDate[2]} ${islamicMonthArray[hijriDate[1] - 1]} ${hijriDate[0]}`;
+
+    return {
+      name: PrayerTimeName.fajr,
+      time: fajrDatetime,
+      inSeconds: this.getDurationInSeconds(fajrDatetime),
+      hijriDate: hijriString,
+      zone: this.zoneSubject.getValue(),
+      district: this.districtSubject.getValue(),
+    }
+  }
+
+
  /**
  * Map the prayer times to the NextPrayerInfo object.
  * @param originData a PrayerTime object that contains the prayer times.
@@ -256,36 +287,6 @@ export class SolatService{
     return todayPrayerTimes.filter(prayer => {
       return (prayer.time > currentTime) && prayer.name !== PrayerTimeName.imsak && prayer.name !== PrayerTimeName.syuruk;
     });
-  }
-
-/**
- * Get next fajr prayer info.
- * @param todayDate current dateTime.
- * @param monthlyTimes current month data of prayer time info.
- * @returns The next fajr prayer time info.
- */
-  getUpcomingFajrTimes(todayDate: Date, monthlyTimes: Solat) {
-    let tomorrow = todayDate;
-    tomorrow.setDate(todayDate.getDate() + 1);
-
-    const tomorrowPrayerTimes = this.getPrayerTimeViaDate(monthlyTimes, tomorrow) as PrayerTime;
-    if (!tomorrowPrayerTimes || !tomorrowPrayerTimes.fajr) {
-      throw new Error("Failed to retrieve Fajr prayer time for tomorrow.");
-    }
-
-    const fajrDatetime = this.dt.unixToDate(tomorrowPrayerTimes.fajr, 1);
-    const hijriDate = this.dt.splitHijri(tomorrowPrayerTimes.hijri, '-');
-    const islamicMonthArray = Object.values(IslamicMonth);
-    const hijriString = `${hijriDate[2]} ${islamicMonthArray[hijriDate[1] - 1]} ${hijriDate[0]}`;
-
-    return {
-      name: PrayerTimeName.fajr,
-      time: fajrDatetime,
-      inSeconds: this.getDurationInSeconds(fajrDatetime),
-      hijriDate: hijriString,
-      zone: this.zoneSubject.getValue(),
-      district: this.districtSubject.getValue(),
-    }
   }
 
   /**
