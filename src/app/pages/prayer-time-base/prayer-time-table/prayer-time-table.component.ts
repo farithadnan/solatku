@@ -42,12 +42,19 @@ export class PrayerTimeTableComponent implements OnInit {
       const todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(monthlyData) as PrayerTime;
 
       this.prayerInfo = this.filterPrayerTimes(todayPrayerTimes);
-      this.prayerInfo.push(this.solatApi.getUpcomingFajrTimes(new Date(), monthlyData));
+
+      // Get the upcoming Fajr time and add it to the prayer info
+      const upcomingFajrInfo = this.solatApi.getUpcomingFajrTimes(new Date(), monthlyData);
+      this.prayerInfo.push(upcomingFajrInfo);
+
+      // Highlight the current prayer row
       this.highlightedRow = this.prayerInfo.map((info, index) => {
         return this.isCurrentPrayer(info.name, info.time, this.prayerInfo[index + 1]?.time);
       });
 
+      // Trim the prayer info to keep it within the desired limit
       this.prayerInfo.splice(7);
+
       this.prayerInfo = this.setPrayerIcon(this.prayerInfo);
       this.cdr.detectChanges();
     });
