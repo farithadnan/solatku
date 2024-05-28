@@ -25,29 +25,38 @@ export class TranslatorService {
     this.translate.use(setLanguage);
   }
 
+  /**
+   * Change language based on language code.
+   * @param lang a language code
+   */
   changeLanguage(lang: string) {
     if (!lang || !this.defaultLanguages.find(x => x === lang)) {
-      this.toastr.error('Language doenst exist ')
+      this.toastr.error('Invalid language selected', 'Error');
       return;
     }
 
-    localStorage.setItem('lang', lang)
+    localStorage.setItem('lang', lang);
+    this.translate.use(lang);
   }
 
-
+  /**
+   * Get the set language.
+   * @returns a language code
+   */
+  getSetLanguage(): string {
+    return localStorage.getItem('lang') || this.translate.getDefaultLang();
+  }
 
   /**
-   *
-   * @param label
-   * @returns
+   * Get translation based on label provided.
+   * @param label a label to be translated.
+   * @returns a translated string.
    */
   getTranslation(label: string): string {
     let result: string = 'NaN';
-
     this.translate.get(label).subscribe((res: string) => {
       result = res;
-    })
-
+    });
     return result;
   }
 }
