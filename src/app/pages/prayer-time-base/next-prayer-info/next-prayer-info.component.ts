@@ -8,6 +8,7 @@ import { Subject, combineLatest } from 'rxjs';
 import { Daerah, GroupZone, Zone } from 'src/app/shared/interfaces/zone.model';
 import { ZoneService } from 'src/app/shared/services/zone.service';
 import { ToastrService } from 'ngx-toastr';
+import { TranslatorService } from 'src/app/shared/services/translator.service';
 
 
 @Component({
@@ -25,6 +26,7 @@ export class NextPrayerInfoComponent implements OnInit {
 
   constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
               @Inject(Injector) private readonly injector: Injector,
+              private translator: TranslatorService,
               private cdr: ChangeDetectorRef,
               private toastr: ToastrService,
               private zoneApi: ZoneService,
@@ -60,32 +62,43 @@ export class NextPrayerInfoComponent implements OnInit {
   /**
    * Open the dialog for zone switcher.
    */
-  openDialog() {
+  async openDialog() {
+    const modalTitle = await this.translator.getTranslation('solatku.info_section.button.change_zone.label');
     this.dialogs.open(
       new PolymorpheusComponent(ZoneSwitcherComponent, this.injector),
       {
         data: this.zoneData,
         size: 'm',
         dismissible: false,
-        label: 'Tukar Zon',
+        label: modalTitle,
       }
     ).subscribe({
-      next: data => {
+      next: async data => {
         this.loading = true;
         const result = data as unknown as Daerah;
 
         if (!result || !result.jakimCode || !result.name) {
-          this.toastr.error('Zon can\'t be set. Please try again.', 'Error');
+          const message = await this.translator.getTranslation('solatku.toastr.info_section.error_msg');
+          const title = await this.translator.getTranslation('solatku.toastr.title.error');
+
+          this.toastr.error(message, title);
+          this.loading = false;
           return;
         }
+
+        if (result.jakimCode === localStorage.getItem('zone')) {
+          this.loading = false;
+          return;
+        }
+
+        const message = await this.translator.getTranslation('solatku.toastr.info_section.success_msg');
+        const title = await this.translator.getTranslation('solatku.toastr.title.success');
+
         this.solatApi.updateZone(result.jakimCode);
         this.solatApi.updateDistrict(result.name);
         this.loading = false;
-        this.toastr.success('Zon has been set successfully.', 'Success');
-      },
-      complete() {
-        console.log("Dialog closed");
-      },
+        this.toastr.success(message, title);
+      }
     })
     this.loading = false;
   }

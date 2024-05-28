@@ -8,7 +8,7 @@
       <div class="tui-island__content">
         <div  class="content-container">
           <div class="next-prayer-section">
-            <p class="tui-island__paragraph tui-text_body-l-2">Waktu seterusnya</p>
+            <p class="tui-island__paragraph tui-text_body-l-2">{{ 'solatku.info_section.title.label' | translate }}</p>
             <h3 class="tui-text_h3 next-prayer-title">{{ nextPrayer.name }}</h3>
             <p class="tui-island__paragraph tui-text_body-s paragraph-lbl">{{ nextPrayer.district | titlecase }}</p>
             <p class="tui-island__paragraph tui-text_body-s paragraph-lbl">
@@ -23,13 +23,13 @@
               size="m"
               [icon]="'tuiIconSliders'"
               tuiButton
-              tuiHint="Tukar Zon"
+              tuiHint="{{ 'solatku.info_section.button.change_zone.hint' | translate }}"
               tuiHintDirection="bottom"
               type="button"
               class="tui-island__footer-button"
               (click)="openDialog()"
           >
-              Tukar Zon
+              {{ 'solatku.info_section.button.change_zone.label' | translate }}
           </button>
         </div>
       </div>

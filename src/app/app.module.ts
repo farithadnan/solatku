@@ -2,7 +2,7 @@ import { of } from 'rxjs';
 import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AppRoutingModule } from './app-routing.module';
@@ -20,11 +20,13 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgDompurifySanitizer } from "@tinkoff/ng-dompurify";
 import { TuiRootModule, TuiDialogModule, TuiButtonModule, TUI_SANITIZER,
          TuiNotificationModule, TuiSvgModule, TuiHintModule, TuiDataListModule,
-         TuiTextfieldControllerModule, TuiLoaderModule } from "@taiga-ui/core";
+         TuiTextfieldControllerModule, TuiLoaderModule, TuiDropdownModule } from "@taiga-ui/core";
 import { TuiDataListWrapperModule, TuiIslandModule, TuiSelectModule } from '@taiga-ui/kit';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiNavigationModule } from "@taiga-ui/experimental";
 import { TUI_DIALOG_CLOSES_ON_BACK } from '@taiga-ui/cdk';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 const TUI_MODULES = [
   TuiRootModule,
@@ -41,6 +43,7 @@ const TUI_MODULES = [
   TuiDataListWrapperModule,
   TuiTextfieldControllerModule,
   TuiLoaderModule,
+  TuiDropdownModule,
 ];
 
 @NgModule({
@@ -67,6 +70,14 @@ const TUI_MODULES = [
     AppRoutingModule,
     BrowserAnimationsModule,
     TUI_MODULES,
+    TranslateModule.forRoot({
+      defaultLanguage: 'ms',
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
     ToastrModule.forRoot({
       timeOut: 3000,
       positionClass: 'toast-bottom-right',
@@ -82,3 +93,8 @@ const TUI_MODULES = [
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+// AoT requires an exported function for factories
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
