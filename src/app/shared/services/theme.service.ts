@@ -15,7 +15,7 @@ export class ThemeService {
   toggleTheme() {
     const newTheme = this.isNightTheme.value;
     this.isNightTheme.next(!this.isNightTheme.value);
-    localStorage.setItem(this.THEME_KEY, newTheme ? 'night' : 'day');
+    localStorage.setItem(this.THEME_KEY, newTheme ? 'day' : 'night');
   }
 
   /**
