@@ -15,12 +15,12 @@ export class TopNavbarComponent implements OnInit{
   ngOnInit(): void {
   }
 
-  changeLanguage(event: any) {
+  async changeLanguage(event: any) {
     const selectedLanguage = event.target.value;
     this.translator.changeLanguage(selectedLanguage);
 
-    const title = this.translator.getTranslation('solatku.toastr.title.success');
-    const message = this.translator.getTranslation('solatku.toastr.zone_switcher_section.language_change_success_msg');
+    const title = await this.translator.getTranslation('solatku.toastr.title.success');
+    const message = await this.translator.getTranslation('solatku.toastr.zone_switcher_section.language_change_success_msg');
     this.toastr.success(message, title);
   }
 

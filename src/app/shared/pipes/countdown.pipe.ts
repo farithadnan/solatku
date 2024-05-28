@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { Observable, Subject, map, takeWhile, timer } from "rxjs";
+import { Observable, Subject, map, mergeMap, takeWhile, timer } from "rxjs";
 import { TranslatorService } from "../services/translator.service";
 
 @Pipe({
@@ -11,13 +11,13 @@ export class CountdownPipe implements PipeTransform {
     return timer(0, 1000).pipe(
       map((value) => duration - value),
       takeWhile((value) => value >= 0),
-      map((value) => {
+      mergeMap(async (value) => {
         if (value === 0) {
           completionEmitter.next();
         }
 
         const timeParts = this.getTimeParts(value);
-        const translations = this.getTranslations(timeParts);
+        const translations = await this.getTranslations(timeParts);
         return this.formatTime(timeParts, translations);
       })
     )
@@ -31,16 +31,16 @@ export class CountdownPipe implements PipeTransform {
     };
   }
 
-  private getTranslations(timeParts: { hours: number, minutes: number, seconds: number }): { hoursText: string, minutesText: string, secondsText: string, remainingText: string } {
+  private async getTranslations(timeParts: { hours: number, minutes: number, seconds: number }): Promise<{ hoursText: string; minutesText: string; secondsText: string; remainingText: string; }> {
     const hoursTextKey = timeParts.hours <= 1 ? 'hour_singular' : 'hour';
     const minutesTextKey = timeParts.minutes <= 1 ? 'minute_singular' : 'minute';
     const secondsTextKey = timeParts.seconds <= 1 ? 'second_singular' : 'second';
 
     return {
-      hoursText: this.translator.getTranslation(`solatku.info_section.countdown.${hoursTextKey}`),
-      minutesText: this.translator.getTranslation(`solatku.info_section.countdown.${minutesTextKey}`),
-      secondsText: this.translator.getTranslation(`solatku.info_section.countdown.${secondsTextKey}`),
-      remainingText: this.translator.getTranslation('solatku.info_section.countdown.remaining')
+      hoursText: await this.translator.getTranslation(`solatku.info_section.countdown.${hoursTextKey}`),
+      minutesText: await this.translator.getTranslation(`solatku.info_section.countdown.${minutesTextKey}`),
+      secondsText: await this.translator.getTranslation(`solatku.info_section.countdown.${secondsTextKey}`),
+      remainingText: await this.translator.getTranslation('solatku.info_section.countdown.remaining')
     };
   }
 

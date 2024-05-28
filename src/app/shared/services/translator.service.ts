@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 import { ToastrService } from "ngx-toastr";
+import { firstValueFrom } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -52,11 +53,7 @@ export class TranslatorService {
    * @param label a label to be translated.
    * @returns a translated string.
    */
-  getTranslation(label: string): string {
-    let result: string = 'NaN';
-    this.translate.get(label).subscribe((res: string) => {
-      result = res;
-    });
-    return result;
+  async getTranslation(label: string): Promise<string> {
+    return await firstValueFrom(this.translate.get(label));
   }
 }

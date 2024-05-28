@@ -62,8 +62,8 @@ export class NextPrayerInfoComponent implements OnInit {
   /**
    * Open the dialog for zone switcher.
    */
-  openDialog() {
-    const modalTitle = this.translator.getTranslation('solatku.info_section.button.change_zone.label');
+  async openDialog() {
+    const modalTitle = await this.translator.getTranslation('solatku.info_section.button.change_zone.label');
     this.dialogs.open(
       new PolymorpheusComponent(ZoneSwitcherComponent, this.injector),
       {
@@ -73,21 +73,21 @@ export class NextPrayerInfoComponent implements OnInit {
         label: modalTitle,
       }
     ).subscribe({
-      next: data => {
+      next: async data => {
         this.loading = true;
         const result = data as unknown as Daerah;
 
         if (!result || !result.jakimCode || !result.name) {
-          const message = this.translator.getTranslation('solatku.toastr.info_section.error_msg');
-          const title = this.translator.getTranslation('solatku.toastr.title.error');
+          const message = await this.translator.getTranslation('solatku.toastr.info_section.error_msg');
+          const title = await this.translator.getTranslation('solatku.toastr.title.error');
 
           this.toastr.error(message, title);
           this.loading = false;
           return;
         }
 
-        const message = this.translator.getTranslation('solatku.toastr.info_section.success_msg');
-        const title = this.translator.getTranslation('solatku.toastr.title.success');
+        const message = await this.translator.getTranslation('solatku.toastr.info_section.success_msg');
+        const title = await this.translator.getTranslation('solatku.toastr.title.success');
 
         this.solatApi.updateZone(result.jakimCode);
         this.solatApi.updateDistrict(result.name);
