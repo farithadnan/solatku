@@ -2,10 +2,18 @@
 	"solatku.info_section.button.change_zone.hint": "Change Zone",
 	"solatku.info_section.button.change_zone.label": "Change Zone",
 	"solatku.info_section.countdown.hour": "hours",
+	"solatku.info_section.countdown.hour_singular": "hour",
 	"solatku.info_section.countdown.minute": "minutes",
+  "solatku.info_section.countdown.minute_singular": "minute",
 	"solatku.info_section.countdown.remaining": "remaining",
 	"solatku.info_section.countdown.second": "seconds",
+  "solatku.info_section.countdown.second_singular": "second",
 	"solatku.info_section.title.label": "Next prayer",
+  "solatku.zone_switcher_section.hint.change_language": "Change Language",
+  "solatku.zone_switcher_section.hint.change_theme": "Change Theme",
+  "solatku.zone_switcher_section.change_language.english": "English",
+  "solatku.zone_switcher_section.change_language.malay": "Malay",
+
 	"solatku.prayer.time.asr": "Asr",
 	"solatku.prayer.time.fajr": "Fajr",
 	"solatku.prayer.time.imsak": "Imsak",
@@ -18,5 +26,6 @@
 	"solatku.toastr.title.error": "Error",
 	"solatku.toastr.title.success": "Success",
 	"solatku.toastr.zone_switcher_section.error_msg": "Zone does not exist.",
+	"solatku.toastr.zone_switcher_section.language_change_success_msg": "Language changed successfully",
 	"solatku.zone_switcher_section.button": "Update"
 }
