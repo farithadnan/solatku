@@ -86,6 +86,11 @@ export class NextPrayerInfoComponent implements OnInit {
           return;
         }
 
+        if (result.jakimCode === localStorage.getItem('zone')) {
+          this.loading = false;
+          return;
+        }
+
         const message = await this.translator.getTranslation('solatku.toastr.info_section.success_msg');
         const title = await this.translator.getTranslation('solatku.toastr.title.success');
 

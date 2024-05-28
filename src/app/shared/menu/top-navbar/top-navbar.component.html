@@ -24,8 +24,12 @@
       <tui-svg src="tuiIconGlobeLarge"></tui-svg>
       <ng-template #content>
         <tui-data-list (click)="changeLanguage($event)">
-          <button tuiOption value="ms">{{ 'solatku.zone_switcher_section.change_language.malay' | translate }}</button>
-          <button tuiOption value="en">{{ 'solatku.zone_switcher_section.change_language.english' | translate }}</button>
+          <button tuiOption value="ms">
+            {{ 'solatku.zone_switcher_section.change_language.malay' | translate }}
+          </button>
+          <button tuiOption value="en">
+            {{ 'solatku.zone_switcher_section.change_language.english' | translate }}
+          </button>
         </tui-data-list>
       </ng-template>
     </div>

@@ -8,15 +8,18 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./top-navbar.component.less']
 })
 export class TopNavbarComponent implements OnInit{
-  open: boolean = false;
 
   constructor(private translator: TranslatorService, private toastr: ToastrService) { }
 
   ngOnInit(): void {
   }
 
+  /** Change Language */
   async changeLanguage(event: any) {
     const selectedLanguage = event.target.value;
+    if (this.translator.getSetLanguage() === selectedLanguage) {
+      return;
+    }
     this.translator.changeLanguage(selectedLanguage);
 
     const title = await this.translator.getTranslation('solatku.toastr.title.success');
