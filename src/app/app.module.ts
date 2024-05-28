@@ -20,7 +20,9 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgDompurifySanitizer } from "@tinkoff/ng-dompurify";
 import { TuiRootModule, TuiDialogModule, TuiButtonModule, TUI_SANITIZER,
          TuiNotificationModule, TuiSvgModule, TuiHintModule, TuiDataListModule,
-         TuiTextfieldControllerModule, TuiLoaderModule, TuiDropdownModule } from "@taiga-ui/core";
+         TuiTextfieldControllerModule, TuiLoaderModule, TuiDropdownModule,
+         TuiModeModule,
+         TuiThemeNightModule} from "@taiga-ui/core";
 import { TuiDataListWrapperModule, TuiIslandModule, TuiSelectModule } from '@taiga-ui/kit';
 import { TuiTableModule } from '@taiga-ui/addon-table';
 import { TuiNavigationModule } from "@taiga-ui/experimental";
@@ -44,6 +46,8 @@ const TUI_MODULES = [
   TuiTextfieldControllerModule,
   TuiLoaderModule,
   TuiDropdownModule,
+  TuiModeModule,
+  TuiThemeNightModule,
 ];
 
 @NgModule({
