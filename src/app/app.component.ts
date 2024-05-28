@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { TranslatorService } from './shared/services/translator.service';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +8,5 @@ import { TranslatorService } from './shared/services/translator.service';
 export class AppComponent {
   title = 'solatku';
 
-constructor(private translator: TranslatorService) {
-
-}
+constructor() {}
 }
