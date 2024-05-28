@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { TranslatorService } from '../../services/translator.service';
 import { ToastrService } from 'ngx-toastr';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-top-navbar',
   templateUrl: './top-navbar.component.html',
-  styleUrls: ['./top-navbar.component.less']
+  styleUrls: ['./top-navbar.component.less'],
 })
 export class TopNavbarComponent implements OnInit{
+  @Output() themeToggle = new EventEmitter<void>();
 
-  constructor(private translator: TranslatorService, private toastr: ToastrService) { }
+  constructor(private translator: TranslatorService, private toastr: ToastrService, public themeService: ThemeService) { }
 
   ngOnInit(): void {
   }
@@ -27,7 +29,12 @@ export class TopNavbarComponent implements OnInit{
     this.toastr.success(message, title);
   }
 
+  /** Change theme */
   changeTheme() {
+    this.themeToggle.emit();
+  }
 
+  get themeIcon(): string {
+    return this.themeService.currentTheme === 'onDark' ? 'tuiIconSunLarge' : 'tuiIconMoonLarge';
   }
 }

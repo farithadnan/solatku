@@ -1,9 +1,11 @@
-<tui-root>
+<tui-root [tuiMode]="mode" >
   <!-- Top navbar -->
-  <app-top-navbar></app-top-navbar>
+  <app-top-navbar (themeToggle)="changeTheme()"></app-top-navbar>
 
   <!-- Main content -->
   <main tuiNavigationMain>
     <app-prayer-time-base></app-prayer-time-base>
   </main>
+
+  <tui-theme-night *ngIf="nightMode$ | async"></tui-theme-night>
 </tui-root>
