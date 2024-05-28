@@ -13,7 +13,7 @@ import { SolatService } from 'src/app/shared/services/solat.service';
 })
 export class PrayerTimeTableComponent implements OnInit {
   prayerInfo: NextPrayerInfo[] = [];
-  highlightedRow: boolean[] = [];
+  highlightedRow: boolean[] | Promise<boolean>[] = [];
   icons: string[] = ['tuiIconMoon', 'tuiIconMoon', 'tuiIconSunrise', 'tuiIconSun', 'tuiIconSunset', 'tuiIconMoon', 'tuiIconMoon']
   loading: boolean = false;
 
@@ -40,8 +40,14 @@ export class PrayerTimeTableComponent implements OnInit {
     this.solatApi.getPrayerTimeByCode().subscribe((data: Solat) => {
       const monthlyData = data;
       const todayPrayerTimes = this.solatApi.getPrayerTimeViaDate(monthlyData) as PrayerTime;
+
       this.prayerInfo = this.filterPrayerTimes(todayPrayerTimes);
-      this.highlightedRow = this.prayerInfo.map((info, index) => this.isCurrentPrayer(info.name, info.time, this.prayerInfo[index + 1]?.time));
+      this.prayerInfo.push(this.solatApi.getUpcomingFajrTimes(new Date(), monthlyData));
+      this.highlightedRow = this.prayerInfo.map((info, index) => {
+        return this.isCurrentPrayer(info.name, info.time, this.prayerInfo[index + 1]?.time);
+      });
+
+      this.prayerInfo.splice(7);
       this.prayerInfo = this.setPrayerIcon(this.prayerInfo);
       this.cdr.detectChanges();
     });

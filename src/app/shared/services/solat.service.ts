@@ -264,7 +264,7 @@ export class SolatService{
  * @param monthlyTimes current month data of prayer time info.
  * @returns The next fajr prayer time info.
  */
-  private getUpcomingFajrTimes(todayDate: Date, monthlyTimes: Solat) {
+  getUpcomingFajrTimes(todayDate: Date, monthlyTimes: Solat) {
     let tomorrow = todayDate;
     tomorrow.setDate(todayDate.getDate() + 1);
 
