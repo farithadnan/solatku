@@ -3,7 +3,7 @@
 # Variables
 IMAGE_NAME="solatku-image"
 CONTAINER_NAME="solatku-container"
-PORT=8080
+PORT=8888
 
 # Ansi codes
 YELLOW='\033[1;33m'
@@ -35,7 +35,7 @@ docker build -t $IMAGE_NAME .
 # Run the new container
 echo ""
 echo -e "${YELLOW}🚀 Running the new container...${NC}"
-docker run -d -p $PORT:8080 --name $CONTAINER_NAME $IMAGE_NAME
+docker run -d -p $PORT:80 --name $CONTAINER_NAME $IMAGE_NAME
 
 # Done
 echo ""
