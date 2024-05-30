@@ -7,10 +7,11 @@
 </h1>
 
 <p align="center">
-<b>Solatku</b> is a web application designed <b>to help Malaysian users know the prayer times of the day</b>. Users can choose their location, and the app will fetch the accurate prayer times based on <b>JAKIM</b>'s data using <a href="https://github.com/mptwaktusolat/api-waktusolat">api-waktusolat API</a>. 
+<b>Solatku</b> is a web application designed <b>to help Malaysian users know the prayer times of the day</b>. Users can choose their location, and the app will fetch the accurate prayer times based on <b>JAKIM</b>'s data using <a href="https://github.com/mptwaktusolat/api-waktusolat">api-waktusolat API</a>.
 </p>
 
 ## 🔥 Motivation
+
 The motivation behind creating **Solatku** was to improve my Angular skills, learn how to use [Taiga UI](https://taiga-ui.dev/getting-started), understand how to dockerize an Angular app, and learn how to enhance performance by using **Nginx** and **Gzip** for handling static files.
 
 ## ✨ Features
