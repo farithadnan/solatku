@@ -1,27 +1,64 @@
-# Solatku
+# 🌟 Solatku
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.8.
+**Solatku** is a web application designed to help Malaysian users know the prayer times of the day. Users can choose their location, and the app will fetch the accurate prayer times based on JAKIM's data using [api-waktusolat](https://github.com/mptwaktusolat/api-waktusolat) API.
 
-## Development server
+The motivation behind creating **Solatku** was to improve my Angular skills, learn how to use Taiga UI, understand how to dockerize an Angular app, and learn how to enhance performance by using Nginx and gzip for handling static files.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## ✨ Features
 
-## Code scaffolding
+- Accurate prayer times based on JAKIM's data
+- Location-based prayer time fetching
+- User-friendly  & responsive interface using Taiga UI.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 📋 Prerequisites
 
-## Build
+- Node.js and npm
+- Angular CLI
+- Docker (for running the app using Docker)
+- Git
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## 🚀 Run using development server
 
-## Running unit tests
+Git clone the repository:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```sh
+git clone https://github.com/farithadnan/solatku.git
+```
 
-## Running end-to-end tests
+Open the project directory using your IDE, and then run the command below to install dependencies:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```sh
+npm install
+```
 
-## Further help
+Next, start the development server by running these command:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```sh
+npm start
+```
+
+## 🐳 Run using Docker
+
+To run the app using multi-stage Docker, simply run either the `update.bat` or `update.sh` script, you can find these script in the root directory of the project's folder.
+
+On Windows:
+
+```sh
+update.bat
+```
+
+On Linux/Mac:
+
+```sh
+./update.sh
+```
+
+Ensure Docker is installed and running on your machine before executing these scripts.
+
+## 📜 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏Credits
+
+- [api-waktusolat](https://github.com/mptwaktusolat/api-waktusolat) is used for fetching prayer times data.
