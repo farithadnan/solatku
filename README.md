@@ -1,4 +1,4 @@
-<h1 align="center">
+![image](https://github.com/farithadnan/solatku/assets/22324133/13b15f8c-772b-42a0-9146-7281ecd0b936)<h1 align="center">
   <br>
   <a href="https://github.com/farithadnan/solatku"><img alt="Solatku's Logo" src="./src/assets/mosque-logo.svg" width="200"></a>
   <br>
@@ -8,12 +8,11 @@
 
 <p align="center">
 <b>Solatku</b> is a web application designed <b>to help Malaysian users know the prayer times of the day</b>. Users can choose their location, and the app will fetch the accurate prayer times based on <b>JAKIM</b>'s data using <a href="https://github.com/mptwaktusolat/api-waktusolat">api-waktusolat API</a>. 
-
-<blockquote>
-The motivation behind creating <b>Solatku</b> was to improve my Angular skills, learn how to use <a href="https://taiga-ui.dev/getting-started">Taiga UI</a>, understand how to dockerize an Angular app, and learn how to enhance performance by using <b>Nginx</b> and <b>Gzip</b> for handling static files.
-</blockquote>
 </p>
 
+<p align="center">
+The motivation behind creating <b>Solatku</b> was to improve my Angular skills, learn how to use <a href="https://taiga-ui.dev/getting-started">Taiga UI</a>, understand how to dockerize an Angular app, and learn how to enhance performance by using <b>Nginx</b> and <b>Gzip</b> for handling static files.
+</p>
 ## ✨ Features
 
 - Accurate prayer times based on **JAKIM**'s data
