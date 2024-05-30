@@ -8,6 +8,13 @@
     </div>
   </a>
   <div class="t-right-menu">
+
+    <div class="check-update-section" (click)="openUpdatePrompt()"
+      title="{{ 'solatku.zone_switcher_section.hint.check_update' | translate }}"
+    >
+      <tui-svg src="tuiIconRefreshCwLarge"></tui-svg>
+    </div>
+
     <div class="theme-section"
       (click)="changeTheme()"
       title="{{ 'solatku.zone_switcher_section.hint.change_theme' | translate }}"

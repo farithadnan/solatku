@@ -1,6 +1,6 @@
 <tui-root [tuiMode]="mode" >
   <!-- Top navbar -->
-  <app-top-navbar (themeToggle)="changeTheme()"></app-top-navbar>
+  <app-top-navbar (themeToggle)="changeTheme()" (updateToggle)="checkUpdate()"></app-top-navbar>
 
   <!-- Main content -->
   <main tuiNavigationMain>

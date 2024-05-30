@@ -10,6 +10,7 @@ import { ThemeService } from '../../services/theme.service';
 })
 export class TopNavbarComponent implements OnInit{
   @Output() themeToggle = new EventEmitter<void>();
+  @Output() updateToggle = new EventEmitter<void>();
 
   constructor(private translator: TranslatorService, private toastr: ToastrService, public themeService: ThemeService) { }
 
@@ -32,6 +33,11 @@ export class TopNavbarComponent implements OnInit{
   /** Change theme */
   changeTheme() {
     this.themeToggle.emit();
+  }
+
+  /** Check for updates */
+  openUpdatePrompt() {
+    this.updateToggle.emit();
   }
 
   get themeIcon(): string {
