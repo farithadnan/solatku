@@ -1,7 +1,7 @@
 .header {
   display: flex;
   height: min-content;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -15,7 +15,27 @@
   text-decoration: none;
 }
 
-.t-logo-name {
+.t-logo-row {
   display: flex;
   color: white;
+  align-items: center;
+}
+
+.t-title {
+  margin: 0 auto;
+}
+
+.t-right-menu {
+  display: flex;
+  align-items: center;
+}
+
+.language-section,
+.theme-section {
+  margin-right: 1rem;
+}
+
+.language-section:hover,
+.theme-section:hover {
+  cursor: pointer;
 }

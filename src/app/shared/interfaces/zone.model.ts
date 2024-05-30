@@ -4,8 +4,12 @@ export interface Zone {
   daerah: string
 }
 
-export interface gps {
-  state: string,
-  district: string,
-  zone: string
+export interface GroupZone {
+  negeri: string,
+  data: Daerah[],
+}
+
+export interface Daerah {
+  jakimCode: string,
+  name: string,
 }

@@ -1,7 +1,10 @@
-
-<app-next-prayer-info
-  [prayerTimes]="todayPrayerTimes"
-  [monthlyTimes]="monthlyData"
-  >
-</app-next-prayer-info>
-
+<tui-loader
+  [ngClass]="{spinner: loading}"
+  [overlay]="true"
+  [size]="'xxl'"
+  [showLoader]="loading">
+    <app-next-prayer-info>
+    </app-next-prayer-info>
+    <app-prayer-time-table>
+    </app-prayer-time-table>
+</tui-loader>

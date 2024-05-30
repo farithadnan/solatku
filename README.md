@@ -1,27 +1,83 @@
-# Solatku
+<h1 align="center">
+  <br>
+  <a href="https://github.com/farithadnan/solatku"><img alt="Solatku's Logo" src="./src/assets/mosque-logo.svg" width="200"></a>
+  <br>
+  <b>Solatku</b>
+  <br>
+</h1>
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.8.
+<p align="center">
+<b>Solatku</b> is a web application designed <b>to help Malaysian users know the prayer times of the day</b>. Users can choose their location, and the app will fetch the accurate prayer times based on <b>JAKIM</b>'s data using <a href="https://github.com/mptwaktusolat/api-waktusolat">api-waktusolat API</a>.
+</p>
 
-## Development server
+## 🔥 Motivation
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+The motivation behind creating **Solatku** was to improve my Angular skills, learn how to use [Taiga UI](https://taiga-ui.dev/getting-started), understand how to dockerize an Angular app, and learn how to enhance performance by using **Nginx** and **Gzip** for handling static files.
 
-## Code scaffolding
+## ✨ Features
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- Accurate prayer times based on **JAKIM**'s data
+- Location-based prayer time fetching
+- User-friendly  & responsive interface using Taiga UI.
 
-## Build
+## 📋 Prerequisites
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- Node.js and npm
+- Angular CLI
+- Docker (for running the app using Docker)
+- Git
 
-## Running unit tests
+## 🚀 Run using development server
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Git clone the repository:
 
-## Running end-to-end tests
+```sh
+git clone https://github.com/farithadnan/solatku.git
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Open the project directory using your IDE, and then run the command below to install dependencies:
 
-## Further help
+```sh
+npm install
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Next, start the development server by running these command:
+
+```sh
+npm start
+```
+
+## 🐳 Run using Docker
+
+To run the app using **multi-stage Docker**, simply run either the `update.bat` or `update.sh` script, you can find these script in the root directory of the project's folder.
+
+On Windows:
+
+```sh
+update.bat
+```
+
+On Linux/Mac:
+
+```sh
+./update.sh
+```
+
+**Ensure Docker is installed and running** on your machine before executing these scripts.
+
+## 📜 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](/LICENSE) file for details.
+
+## 🙏Acknowledgements
+
+Article, API and resources that help me throughout the development:
+
+- [api-waktusolat](https://github.com/mptwaktusolat/api-waktusolat) - is used for fetching prayer times data.
+- [Taiga Ui](https://taiga-ui.dev/getting-started) - is used as the UI framework for the app.
+- [Nginx Cache for Dockerized Angular App](https://zakimohammed.medium.com/nginx-cache-config-for-dockerized-angular-app-ngdocker-58e58f965c7).
+- [Improve performance with Gzip](https://codeomelet.com/posts/gzip-dockerized-angular-app-with-nginx-ngdocker).
+- [How to dockerize Angular's app](https://wkrzywiec.medium.com/build-and-run-angular-application-in-a-docker-container-b65dbbc50be8).
+- [Multi-stage Docker](https://docs.docker.com/build/building/multi-stage/).
+- [Adding PWA to Angular app](https://dev.to/rodrigokamada/adding-the-progressive-web-application-pwa-to-an-angular-application-4g1e).
+- [How to deploy an Angular app with Vercel](https://medium.com/@lara.delrio333/deploy-an-angular-project-in-vercel-with-secret-environment-variables-74323925712d).

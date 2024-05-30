@@ -1,10 +1,37 @@
 <header tuiNavigationHeader class="header">
   <a tuiNavigationLogo  tuilink routerLink="/" class="t-logo-link">
-    <span class="t-content">
-      <span class="t-logo-name tui-text_h3">
+    <div class="t-content">
+      <div class="t-logo-row">
         <img src="../../../../assets/mosque-logo.svg" alt="Logo" class="t-logo-img">
-        <!-- Solatku -->
-      </span>
-    </span>
+        <span class="tui-text_h5 t-title">Solatku</span>
+      </div>
+    </div>
   </a>
+  <div class="t-right-menu">
+    <div class="theme-section"
+      (click)="changeTheme()"
+      title="{{ 'solatku.zone_switcher_section.hint.change_theme' | translate }}"
+    >
+      <tui-svg [src]="themeIcon"></tui-svg>
+    </div>
+
+    <div
+      tuiDropdownHover
+      [tuiDropdown]="content"
+      class="language-section"
+      title="{{'solatku.zone_switcher_section.hint.change_language' | translate}}"
+    >
+      <tui-svg src="tuiIconGlobeLarge"></tui-svg>
+      <ng-template #content>
+        <tui-data-list (click)="changeLanguage($event)">
+          <button tuiOption value="ms">
+            {{ 'solatku.zone_switcher_section.change_language.malay' | translate }}
+          </button>
+          <button tuiOption value="en">
+            {{ 'solatku.zone_switcher_section.change_language.english' | translate }}
+          </button>
+        </tui-data-list>
+      </ng-template>
+    </div>
+  </div>
 </header>
