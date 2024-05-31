@@ -87,11 +87,6 @@ export class AppComponent implements OnInit {
     window.location.reload();
   }
 
-  /** Close version modal */
-  closeVersion(): void {
-    this.modalVersion = false;
-  }
-
   /** Update online status */
   private updateOnlineStatus(): void {
     this.isOnline = window.navigator.onLine;
