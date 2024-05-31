@@ -1,11 +1,28 @@
 <tui-root [tuiMode]="mode" >
   <!-- Top navbar -->
-  <app-top-navbar (themeToggle)="changeTheme()"></app-top-navbar>
+  <app-top-navbar
+    [mobilePlatform]="modalPwaPlatform"
+    (themeToggle)="changeTheme()"
+    (pwaInstall)="addToHomeScreen()"
+  >
+  </app-top-navbar>
 
   <!-- Main content -->
   <main tuiNavigationMain>
     <app-prayer-time-base></app-prayer-time-base>
   </main>
 
+  <div *ngIf="modalPwaPlatform === 'ANDROID' || modalPwaPlatform === 'IOS'">
+    <pre>It's Mobile!</pre>
+  </div>
+
   <tui-theme-night *ngIf="nightMode$ | async"></tui-theme-night>
+
+  <div id="connection-bar-id" class="connection-bar"
+    [ngClass]="{'offline': !isOnline, 'online': isOnline && wasOffline}"
+    *ngIf="!isOnline || wasOffline"
+  >
+    <span *ngIf="!isOnline">{{ 'solatku.connection.offline' | translate }}</span>
+    <span *ngIf="isOnline && wasOffline">{{ 'solatku.connection.online' | translate }}</span>
+  </div>
 </tui-root>

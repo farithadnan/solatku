@@ -31,11 +31,25 @@
 }
 
 .language-section,
+.check-install-section,
 .theme-section {
   margin-right: 1rem;
 }
 
 .language-section:hover,
+.check-install-section:hover,
 .theme-section:hover {
   cursor: pointer;
+}
+
+@media only screen and (min-width: 1024px) {
+  .theme-section:hover {
+    rotate: 360deg;
+    transition: 1s;
+  }
+
+  .theme-section:not(:hover) {
+    rotate: 0deg;
+    transition: 1s;
+  }
 }
