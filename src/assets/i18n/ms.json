@@ -18,6 +18,8 @@
   "solatku.zone_switcher_section.button": "Tukar",
 
   "solatku.check_install_section.title": "Muat Turun Aplikasi",
+  "solatku.ios_instruction.first_step": "Untuk memuat turun aplikasi Solatku, tekan butang 'Menu'",
+  "solatku.ios_instruction.sec_step": "kemudian tekan butang 'Add to home screen'",
 
 
   "solatku.check_update_section.title": "Semak Kemas Kini",
