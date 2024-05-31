@@ -70,7 +70,6 @@
                   "maximumError": "4kb"
                 }
               ],
-              "optimization": true,
               "outputHashing": "all"
             },
             "development": {
@@ -81,7 +80,7 @@
                 }
               ],
               "buildOptimizer": false,
-              "optimization": true,
+              "optimization": false,
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
