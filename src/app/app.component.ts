@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
   title = 'solatku';
 
   isOnline!: boolean;
+  wasOffline = false;
   modalVersion!: boolean;
 
   constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
@@ -89,7 +90,31 @@ export class AppComponent implements OnInit {
 
   /** Update online status */
   private updateOnlineStatus(): void {
+    const wasOnline = this.isOnline;
     this.isOnline = window.navigator.onLine;
-    console.log(`isOnline=[${this.isOnline}]`);
+
+    // If the user was online and now is offline
+    if (wasOnline && !this.isOnline) {
+      this.wasOffline = true;
+    }
+
+    // If the user was offline and now is online
+    if (this.isOnline && this.wasOffline) {
+      setTimeout(() => {
+        this.hideConnectionBar();
+      }, 3000);
+    }
+  }
+
+  /** Hide connection bar */
+  private hideConnectionBar(): void {
+    const bar = document.getElementById('connection-bar-id');
+    if (bar) {
+      bar.classList.add('hide');
+      setTimeout(() => {
+        this.wasOffline = false;
+        bar.classList.remove('hide');
+      }, 500)
+    }
   }
 }

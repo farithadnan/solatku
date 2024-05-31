@@ -8,4 +8,12 @@
   </main>
 
   <tui-theme-night *ngIf="nightMode$ | async"></tui-theme-night>
+
+  <div id="connection-bar-id" class="connection-bar"
+    [ngClass]="{'offline': !isOnline, 'online': isOnline && wasOffline}"
+    *ngIf="!isOnline || wasOffline"
+  >
+    <span *ngIf="!isOnline">{{ 'solatku.connection.offline' | translate }}</span>
+    <span *ngIf="isOnline && wasOffline">{{ 'solatku.connection.online' | translate }}</span>
+  </div>
 </tui-root>

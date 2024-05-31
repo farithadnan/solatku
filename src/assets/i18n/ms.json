@@ -35,5 +35,8 @@
 	"solatku.toastr.title.error": "Ralat",
 	"solatku.toastr.title.success": "Berjaya",
 	"solatku.toastr.zone_switcher_section.error_msg": "Zon tidak wujud.",
-  "solatku.toastr.zone_switcher_section.language_change_success_msg": "Bahasa telah berjaya ditukar."
+  "solatku.toastr.zone_switcher_section.language_change_success_msg": "Bahasa telah berjaya ditukar.",
+
+  "solatku.connection.offline": "Tiada sambungan internet",
+  "solatku.connection.online": "Kembali dalam talian"
 }

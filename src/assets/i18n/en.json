@@ -23,7 +23,6 @@
   "solatku.check_update_section.button.confirm": "Yes",
   "solatku.check_update_section.button.cancel": "No",
 
-
 	"solatku.prayer.time.asr": "Asr",
 	"solatku.prayer.time.fajr": "Fajr",
 	"solatku.prayer.time.imsak": "Imsak",
@@ -36,5 +35,8 @@
 	"solatku.toastr.title.error": "Error",
 	"solatku.toastr.title.success": "Success",
 	"solatku.toastr.zone_switcher_section.error_msg": "Zone does not exist.",
-	"solatku.toastr.zone_switcher_section.language_change_success_msg": "Language changed successfully"
+	"solatku.toastr.zone_switcher_section.language_change_success_msg": "Language changed successfully",
+
+  "solatku.connection.offline": "No internet connection",
+  "solatku.connection.online": "Back online"
 }
