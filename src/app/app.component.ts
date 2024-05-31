@@ -5,6 +5,8 @@ import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { TuiDialogService } from '@taiga-ui/core';
 import { TUI_PROMPT } from '@taiga-ui/kit';
 import { TranslatorService } from './shared/services/translator.service';
+import { Platform } from '@angular/cdk/platform';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-root',
@@ -17,16 +19,17 @@ export class AppComponent implements OnInit {
 
   isOnline!: boolean;
   wasOffline = false;
-  modalVersion!: boolean;
+  modalPwaEvent: any;
+  modalPwaPlatform: string|undefined;
 
   constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
-    @Inject(Injector) private readonly injector: Injector,
+    private platform: Platform,
     private translator: TranslatorService,
     private themeService: ThemeService,
+    private toastr: ToastrService,
     private swUpdate: SwUpdate) {
     this.nightMode$ = this.themeService.isNightTheme$;
     this.isOnline = false;
-    this.modalVersion = false;
   }
 
   ngOnInit(): void {
@@ -41,10 +44,12 @@ export class AppComponent implements OnInit {
         filter((evt: any): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
         map((evt: any) => {
           console.info(`currentVersion=[${evt.currentVersion}] | latestVersion=[${evt.latestVersion}]`);
-          this.modalVersion = true;
+          this.updatePwaDialog();
         })
       )
     }
+
+    this.loadModalPwa();
   }
 
   /** Get the current theme */
@@ -57,35 +62,47 @@ export class AppComponent implements OnInit {
     this.themeService.toggleTheme();
   }
 
-  /** Check for updates */
-  async checkUpdate(){
-    if (this.modalVersion) {
-      this.dialogs.open<boolean>(TUI_PROMPT, {
-        label: await this.translator.getTranslation('solatku.check_update_section.title'),
-        data: {
-          content: await this.translator.getTranslation('solatku.check_update_section.have_update'),
-          yes: await this.translator.getTranslation('solatku.check_update_section.button.confirm'),
-          no: await this.translator.getTranslation('solatku.check_update_section.button.cancel'),
-        },
-      }).subscribe(response => {
-        if (response) {
-          this.updateVersion();
-        }
-      })
-    } else {
-      this.dialogs.open(await this.translator.getTranslation('solatku.check_update_section.no_update'),
-      {
-        label: await this.translator.getTranslation('solatku.check_update_section.title'),
-        size: 's',
-      })
-      .subscribe()
-    }
+  /** Dialog to update PWA */
+  async updatePwaDialog(){
+    this.dialogs.open<boolean>(TUI_PROMPT, {
+      label: await this.translator.getTranslation('solatku.check_update_section.title'),
+      data: {
+        content: await this.translator.getTranslation('solatku.check_update_section.have_update'),
+        yes: await this.translator.getTranslation('solatku.check_update_section.button.confirm'),
+        no: await this.translator.getTranslation('solatku.check_update_section.button.cancel'),
+      },
+    }).subscribe(response => {
+      if (response) {
+        window.location.reload();
+      }
+    })
   }
 
-  /** Update version */
-  updateVersion(): void {
-    this.modalVersion = false;
-    window.location.reload();
+
+  /** Add to home screen */
+  addToHomeScreen(): void {
+    this.modalPwaEvent.prompt();
+    this.modalPwaPlatform = undefined;
+  }
+
+  /** Load PWA modal */
+  private loadModalPwa(): void {
+    // Check if the user is using Android
+    if (this.platform.ANDROID) {
+      window.addEventListener('beforeinstallprompt', (event: any) => {
+        event?.preventDefault();
+        this.modalPwaEvent = event;
+        this.modalPwaPlatform = 'ANDROID';
+      });
+    }
+
+    // Check if the user is using iOS and not in standalone mode
+    if (this.platform.IOS && this.platform.SAFARI) {
+      const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator as any).standalone;
+      if (!isInStandaloneMode) {
+        this.modalPwaPlatform = 'IOS';
+      }
+    }
   }
 
   /** Update online status */

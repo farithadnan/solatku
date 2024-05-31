@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { TranslatorService } from '../../services/translator.service';
 import { ToastrService } from 'ngx-toastr';
 import { ThemeService } from '../../services/theme.service';
@@ -7,10 +7,12 @@ import { ThemeService } from '../../services/theme.service';
   selector: 'app-top-navbar',
   templateUrl: './top-navbar.component.html',
   styleUrls: ['./top-navbar.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopNavbarComponent implements OnInit{
   @Output() themeToggle = new EventEmitter<void>();
-  @Output() updateToggle = new EventEmitter<void>();
+  @Output() pwaInstall = new EventEmitter<void>();
+  @Input() mobilePlatform!: string | undefined;
 
   constructor(private translator: TranslatorService, private toastr: ToastrService, public themeService: ThemeService) { }
 
@@ -35,9 +37,9 @@ export class TopNavbarComponent implements OnInit{
     this.themeToggle.emit();
   }
 
-  /** Check for updates */
-  openUpdatePrompt() {
-    this.updateToggle.emit();
+  /** Install PWA */
+  installPWA() {
+    this.pwaInstall.emit();
   }
 
   get themeIcon(): string {
