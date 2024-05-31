@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "node -r dotenv/config mynode.js && ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -33,6 +33,7 @@
     "@taiga-ui/styles": "^3.72.0",
     "@tinkoff/ng-dompurify": "4.0.0",
     "dompurify": "3.0.6",
+    "dotenv": "^16.4.5",
     "hijri-converter": "^1.1.1",
     "ngx-toastr": "^18.0.0",
     "rxjs": "~7.8.0",
