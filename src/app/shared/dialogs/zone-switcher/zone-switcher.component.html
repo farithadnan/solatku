@@ -5,7 +5,7 @@
     [tuiTextfieldIconLeft]="'tuiIconMapPin'"
     [(ngModel)]="value"
 >
-    {{ placeholder }}
+    {{ 'solatku.zone_switcher_section.hint.change_zone' | translate }}
     <tui-data-list *tuiDataList>
         <tui-opt-group *ngFor="let zone of zones" [label]="zone.negeri">
           <button

@@ -9,11 +9,20 @@
 	"solatku.info_section.countdown.second": "seconds",
   "solatku.info_section.countdown.second_singular": "second",
 	"solatku.info_section.title.label": "Next prayer",
-  "solatku.zone_switcher_section.hint.check_update": "Check for updates",
+
+  "solatku.check_update_section.title": "Check for updates",
   "solatku.zone_switcher_section.hint.change_language": "Change Language",
   "solatku.zone_switcher_section.hint.change_theme": "Change Theme",
+  "solatku.zone_switcher_section.hint.change_zone": "Choose Zone",
   "solatku.zone_switcher_section.change_language.english": "English",
   "solatku.zone_switcher_section.change_language.malay": "Malay",
+	"solatku.zone_switcher_section.button": "Update",
+
+  "solatku.check_update_section.have_update": "A new version of the app is available. Do you want to update now?",
+  "solatku.check_update_section.no_update": "No updates available, you are using the latest version.",
+  "solatku.check_update_section.button.confirm": "Yes",
+  "solatku.check_update_section.button.cancel": "No",
+
 
 	"solatku.prayer.time.asr": "Asr",
 	"solatku.prayer.time.fajr": "Fajr",
@@ -27,6 +36,5 @@
 	"solatku.toastr.title.error": "Error",
 	"solatku.toastr.title.success": "Success",
 	"solatku.toastr.zone_switcher_section.error_msg": "Zone does not exist.",
-	"solatku.toastr.zone_switcher_section.language_change_success_msg": "Language changed successfully",
-	"solatku.zone_switcher_section.button": "Update"
+	"solatku.toastr.zone_switcher_section.language_change_success_msg": "Language changed successfully"
 }
