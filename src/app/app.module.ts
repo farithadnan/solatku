@@ -30,7 +30,6 @@ import { TUI_DIALOG_CLOSES_ON_BACK } from '@taiga-ui/cdk';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { checkUpdateComponent } from './shared/dialogs/check-update/check-update.component';
 
 const TUI_MODULES = [
   TuiRootModule,
@@ -61,7 +60,6 @@ const TUI_MODULES = [
     PrayerTimeTableComponent,
     NotificationComponent,
     ZoneSwitcherComponent,
-    checkUpdateComponent,
     EpochToDatePipe,
     CountdownPipe,
   ],

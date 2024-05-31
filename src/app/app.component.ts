@@ -1,9 +1,10 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Injector, OnInit } from '@angular/core';
 import { Observable, filter, map } from 'rxjs';
 import { ThemeService } from './shared/services/theme.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { TuiDialogService } from '@taiga-ui/core';
 import { TUI_PROMPT } from '@taiga-ui/kit';
+import { TranslatorService } from './shared/services/translator.service';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,8 @@ export class AppComponent implements OnInit {
   modalVersion!: boolean;
 
   constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
+    @Inject(Injector) private readonly injector: Injector,
+    private translator: TranslatorService,
     private themeService: ThemeService,
     private swUpdate: SwUpdate) {
     this.nightMode$ = this.themeService.isNightTheme$;
@@ -53,11 +56,29 @@ export class AppComponent implements OnInit {
     this.themeService.toggleTheme();
   }
 
-  checkUpdate(){
-    console.log('tra');
-    // if (this.modalVersion) {
-
-    // }
+  /** Check for updates */
+  async checkUpdate(){
+    if (this.modalVersion) {
+      this.dialogs.open<boolean>(TUI_PROMPT, {
+        label: await this.translator.getTranslation('solatku.check_update_section.title'),
+        data: {
+          content: await this.translator.getTranslation('solatku.check_update_section.have_update'),
+          yes: await this.translator.getTranslation('solatku.check_update_section.button.confirm'),
+          no: await this.translator.getTranslation('solatku.check_update_section.button.cancel'),
+        },
+      }).subscribe(response => {
+        if (response) {
+          this.updateVersion();
+        }
+      })
+    } else {
+      this.dialogs.open(await this.translator.getTranslation('solatku.check_update_section.no_update'),
+      {
+        label: await this.translator.getTranslation('solatku.check_update_section.title'),
+        size: 's',
+      })
+      .subscribe()
+    }
   }
 
   /** Update version */
