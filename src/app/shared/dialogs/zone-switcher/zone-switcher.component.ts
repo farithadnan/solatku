@@ -5,6 +5,7 @@ import { Daerah, GroupZone } from '../../interfaces/zone.model';
 import { ZoneService } from '../../services/zone.service';
 import { ToastrService } from 'ngx-toastr';
 import { SolatService } from '../../services/solat.service';
+import { TranslatorService } from '../../services/translator.service';
 
 @Component({
   selector: 'app-zone-switcher',
@@ -15,10 +16,9 @@ import { SolatService } from '../../services/solat.service';
 export class ZoneSwitcherComponent implements OnInit{
   value: any | null = null;
   selectSize: 's' | 'm' | 'l' = 'l';
-  placeholder = 'Pilih Zon';
 
-  constructor(@Inject(TuiDialogService) private readonly dialogs: TuiDialogService,
-    private zoneApi: ZoneService, private toastr: ToastrService, private solatApi: SolatService,
+  constructor(private zoneApi: ZoneService,
+    private toastr: ToastrService, private translator: TranslatorService,
     @Inject(POLYMORPHEUS_CONTEXT) private readonly context: TuiDialogContext<Daerah, GroupZone[]>) {}
 
   get zones(): GroupZone[] {
@@ -29,12 +29,14 @@ export class ZoneSwitcherComponent implements OnInit{
     this.value = localStorage.getItem('district');
   }
 
-  submit(): void {
+  async submit(): Promise<void> {
     if (this.value !== null) {
       const zone = this.zoneApi.getJakimCode(this.value, this.zones);
 
       if (zone == '') {
-        this.toastr.error('Zone not found', 'Error');
+        const title = await this.translator.getTranslation('solatku.toastr.title.error');
+        const message = await this.translator.getTranslation('solatku.toastr.zone_switcher_section.error_msg');
+        this.toastr.error(message, title);
         return;
       }
 

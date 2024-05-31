@@ -1,5 +1,5 @@
 import { of } from 'rxjs';
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -29,6 +29,7 @@ import { TuiNavigationModule } from "@taiga-ui/experimental";
 import { TUI_DIALOG_CLOSES_ON_BACK } from '@taiga-ui/cdk';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 const TUI_MODULES = [
   TuiRootModule,
@@ -86,6 +87,12 @@ const TUI_MODULES = [
       timeOut: 3000,
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
     }),
 ],
   providers: [

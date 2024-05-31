@@ -8,6 +8,16 @@
     </div>
   </a>
   <div class="t-right-menu">
+
+    <!-- Install PWA -->
+    <div *ngIf="mobilePlatform === 'ANDROID' || mobilePlatform === 'IOS'" class="check-install-section"
+      (click)="installPWA()"
+      title="{{ 'solatku.check_install_section.title' | translate }}"
+    >
+      <tui-svg src="tuiIconDownloadLarge"></tui-svg>
+    </div>
+
+    <!-- Theme Switcher -->
     <div class="theme-section"
       (click)="changeTheme()"
       title="{{ 'solatku.zone_switcher_section.hint.change_theme' | translate }}"
@@ -15,6 +25,7 @@
       <tui-svg [src]="themeIcon"></tui-svg>
     </div>
 
+    <!-- Language Switcher -->
     <div
       tuiDropdownHover
       [tuiDropdown]="content"
