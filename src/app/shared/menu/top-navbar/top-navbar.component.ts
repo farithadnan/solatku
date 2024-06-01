@@ -11,8 +11,10 @@ import { ThemeService } from '../../services/theme.service';
 })
 export class TopNavbarComponent implements OnInit{
   @Output() themeToggle = new EventEmitter<void>();
-  @Output() pwaInstall = new EventEmitter<void>();
+  @Output() pwaAndroid = new EventEmitter<void>();
+  @Output() pwaIos = new EventEmitter<void>();
   @Input() mobilePlatform!: string | undefined;
+  @Input() isMobile!: boolean;
 
   constructor(private translator: TranslatorService, private toastr: ToastrService, public themeService: ThemeService) { }
 
@@ -39,7 +41,11 @@ export class TopNavbarComponent implements OnInit{
 
   /** Install PWA */
   installPWA() {
-    this.pwaInstall.emit();
+    if (this.mobilePlatform === 'ANDROID') {
+      this.pwaAndroid.emit();
+      return;
+    }
+    this.pwaIos.emit();
   }
 
   get themeIcon(): string {

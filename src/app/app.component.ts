@@ -1,12 +1,13 @@
-import { Component, Inject, Injector, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Observable, filter, map } from 'rxjs';
 import { ThemeService } from './shared/services/theme.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { PolymorpheusComponent } from '@tinkoff/ng-polymorpheus';
 import { TuiDialogService } from '@taiga-ui/core';
 import { TUI_PROMPT } from '@taiga-ui/kit';
 import { TranslatorService } from './shared/services/translator.service';
 import { Platform } from '@angular/cdk/platform';
-import { ToastrService } from 'ngx-toastr';
+import { iosInstructionComponent } from './shared/dialogs/ios-instruction/ios-instruction.component';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,8 @@ export class AppComponent implements OnInit {
   nightMode$: Observable<boolean>;
   title = 'solatku';
 
-  isOnline!: boolean;
+  isMobile: boolean;
+  isOnline: boolean;
   wasOffline = false;
   modalPwaEvent: any;
   modalPwaPlatform: string|undefined;
@@ -26,10 +28,10 @@ export class AppComponent implements OnInit {
     private platform: Platform,
     private translator: TranslatorService,
     private themeService: ThemeService,
-    private toastr: ToastrService,
     private swUpdate: SwUpdate) {
     this.nightMode$ = this.themeService.isNightTheme$;
     this.isOnline = false;
+    this.isMobile = false;
   }
 
   ngOnInit(): void {
@@ -85,12 +87,26 @@ export class AppComponent implements OnInit {
     this.modalPwaPlatform = undefined;
   }
 
+  /** Instruction for IOS */
+  async iosInstruction(): Promise<void> {
+    console.log('tra');
+    const modalTitle = await this.translator.getTranslation('solatku.check_install_section.title');
+    this.dialogs.open(
+      new PolymorpheusComponent(iosInstructionComponent, null), {
+      size: 's',
+      dismissible: false,
+      label: modalTitle
+    })
+      .subscribe();
+  }
+
   /** Load PWA modal */
   private loadModalPwa(): void {
     // Check if the user is using Android
     if (this.platform.ANDROID) {
       window.addEventListener('beforeinstallprompt', (event: any) => {
         event?.preventDefault();
+        this.isMobile = true;
         this.modalPwaEvent = event;
         this.modalPwaPlatform = 'ANDROID';
       });
@@ -100,6 +116,7 @@ export class AppComponent implements OnInit {
     if (this.platform.IOS && this.platform.SAFARI) {
       const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator as any).standalone;
       if (!isInStandaloneMode) {
+        this.isMobile = true;
         this.modalPwaPlatform = 'IOS';
       }
     }

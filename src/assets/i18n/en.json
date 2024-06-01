@@ -11,6 +11,8 @@
 	"solatku.info_section.title.label": "Next prayer",
 
   "solatku.check_install_section.title": "Install the app",
+  "solatku.ios_instruction.first_step": "To install this Solatku app on your device, tap the 'Menu' button",
+  "solatku.ios_instruction.sec_step": "and then 'Add to home screen' button",
 
   "solatku.check_update_section.title": "Check for updates",
   "solatku.zone_switcher_section.hint.change_language": "Change Language",

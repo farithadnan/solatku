@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  api_url: 'https://api.waktusolat.app',
+  api_url: 'https://api.waktusolat.app'
 };

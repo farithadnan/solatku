@@ -1,9 +1,11 @@
 <tui-root [tuiMode]="mode" >
   <!-- Top navbar -->
   <app-top-navbar
+    [isMobile]="isMobile"
     [mobilePlatform]="modalPwaPlatform"
     (themeToggle)="changeTheme()"
-    (pwaInstall)="addToHomeScreen()"
+    (pwaAndroid)="addToHomeScreen()"
+    (pwaIos)="iosInstruction()"
   >
   </app-top-navbar>
 
@@ -11,10 +13,6 @@
   <main tuiNavigationMain>
     <app-prayer-time-base></app-prayer-time-base>
   </main>
-
-  <div *ngIf="modalPwaPlatform === 'ANDROID' || modalPwaPlatform === 'IOS'">
-    <pre>It's Mobile!</pre>
-  </div>
 
   <tui-theme-night *ngIf="nightMode$ | async"></tui-theme-night>
 

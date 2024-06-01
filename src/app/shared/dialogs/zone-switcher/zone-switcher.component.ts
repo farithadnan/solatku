@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
-import { TuiDialogContext, TuiDialogService } from '@taiga-ui/core';
+import { TuiDialogContext } from '@taiga-ui/core';
 import { POLYMORPHEUS_CONTEXT } from '@tinkoff/ng-polymorpheus';
 import { Daerah, GroupZone } from '../../interfaces/zone.model';
 import { ZoneService } from '../../services/zone.service';
 import { ToastrService } from 'ngx-toastr';
-import { SolatService } from '../../services/solat.service';
 import { TranslatorService } from '../../services/translator.service';
 
 @Component({
