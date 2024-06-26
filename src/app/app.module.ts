@@ -8,6 +8,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TopNavbarComponent } from "./shared/menu/top-navbar/top-navbar.component";
+import { FooterComponent } from "./shared/menu/footer/footer.component";
 import { PrayerTimeBaseComponent } from './pages/prayer-time-base/prayer-time-base.component';
 import { NextPrayerInfoComponent } from './pages/prayer-time-base/next-prayer-info/next-prayer-info.component';
 import { NotificationComponent } from './shared/notification/notification.component';
@@ -56,6 +57,7 @@ const TUI_MODULES = [
   declarations: [
     AppComponent,
     TopNavbarComponent,
+    FooterComponent,
     PrayerTimeBaseComponent,
     NextPrayerInfoComponent,
     PrayerTimeTableComponent,

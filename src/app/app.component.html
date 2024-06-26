@@ -1,26 +1,31 @@
 <tui-root [tuiMode]="mode" >
-  <!-- Top navbar -->
-  <app-top-navbar
-    [isMobile]="isMobile"
-    [mobilePlatform]="modalPwaPlatform"
-    (themeToggle)="changeTheme()"
-    (pwaAndroid)="addToHomeScreen()"
-    (pwaIos)="iosInstruction()"
-  >
-  </app-top-navbar>
+  <div class="main-container">
+    <!-- Top navbar -->
+    <app-top-navbar
+      [isMobile]="isMobile"
+      [mobilePlatform]="modalPwaPlatform"
+      (themeToggle)="changeTheme()"
+      (pwaAndroid)="addToHomeScreen()"
+      (pwaIos)="iosInstruction()"
+    >
+    </app-top-navbar>
 
-  <!-- Main content -->
-  <main tuiNavigationMain>
-    <app-prayer-time-base></app-prayer-time-base>
-  </main>
+    <!-- Main content -->
+    <main tuiNavigationMain class="main-content">
+      <app-prayer-time-base></app-prayer-time-base>
+    </main>
 
-  <tui-theme-night *ngIf="nightMode$ | async"></tui-theme-night>
+    <tui-theme-night *ngIf="nightMode$ | async"></tui-theme-night>
 
-  <div id="connection-bar-id" class="connection-bar"
-    [ngClass]="{'offline': !isOnline, 'online': isOnline && wasOffline}"
-    *ngIf="!isOnline || wasOffline"
-  >
-    <span *ngIf="!isOnline">{{ 'solatku.connection.offline' | translate }}</span>
-    <span *ngIf="isOnline && wasOffline">{{ 'solatku.connection.online' | translate }}</span>
+    <div id="connection-bar-id" class="connection-bar"
+      [ngClass]="{'offline': !isOnline, 'online': isOnline && wasOffline}"
+      *ngIf="!isOnline || wasOffline"
+    >
+      <span *ngIf="!isOnline">{{ 'solatku.connection.offline' | translate }}</span>
+      <span *ngIf="isOnline && wasOffline">{{ 'solatku.connection.online' | translate }}</span>
+    </div>
   </div>
+
+  <!-- Footer -->
+   <app-footer></app-footer>
 </tui-root>
