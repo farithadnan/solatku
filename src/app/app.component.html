@@ -26,6 +26,6 @@
     </div>
 
    <!-- Footer -->
-   <app-footer [ngClass]="{'footer-white': mode !== 'onDark', 'footer-dark': mode === 'onDark'}"></app-footer>
+   <app-footer [ngClass]="{'footer-white': mode === null, 'footer-dark': mode === 'onDark'}"></app-footer>
   </div>
 </tui-root>
