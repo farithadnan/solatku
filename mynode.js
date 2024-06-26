@@ -6,7 +6,7 @@ const successColor = '\x1b[32m%s\x1b[0m';
 const checkSign = '\u{2705}';
 
 const envFileContent = `export const environment = {
-    production: '${process.env.production}',
+    production: ${process.env.production},
     api_url: '${process.env.api_url}',
   };
 `;
